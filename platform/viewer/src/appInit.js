@@ -97,6 +97,12 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     // appConfig.modes.push(window.segmentationMode);
   }
 
+  if (appConfig.headers) {
+    servicesManager.services.UserAuthenticationService.getAuthorizationHeader = () => {
+      return appConfig.headers;
+    };
+  }
+
   return {
     appConfig,
     commandsManager,
