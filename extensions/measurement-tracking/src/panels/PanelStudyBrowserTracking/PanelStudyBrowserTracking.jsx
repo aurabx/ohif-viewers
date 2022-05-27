@@ -429,7 +429,7 @@ function _mapDisplaySets(
         displaySetInstanceUID,
         // .. Any other data to pass
       },
-      bodyPartExamined: ds.getAttribute('images')[0].BodyPartExamined,
+      bodyPartExamined: ds.getImage(0).BodyPartExamined,
       isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
       viewportIdentificator,
     };
