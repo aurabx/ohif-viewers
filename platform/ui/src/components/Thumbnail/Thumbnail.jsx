@@ -19,12 +19,13 @@ const Thumbnail = ({
   isActive,
   onClick,
   onDoubleClick,
+  bodyPartExamined,
 }) => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
   // specified item.
   const [collectedProps, drag, dragPreview] = useDrag({
-    type: "displayset",
+    type: 'displayset',
     item: { ...dragData },
     canDrag: function(monitor) {
       return Object.keys(dragData).length !== 0;
@@ -76,6 +77,7 @@ const Thumbnail = ({
           </div>
         </div>
         <div className="text-base text-white break-all">{description}</div>
+        <div className="text-base text-white break-all">{bodyPartExamined}</div>
       </div>
     </div>
   );

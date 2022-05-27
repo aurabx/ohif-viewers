@@ -166,7 +166,6 @@ function PanelStudyBrowserTracking({
     viewports,
     dataSource,
   ]);
-
   // ~~ subscriptions --> displaySets
   useEffect(() => {
     // DISPLAY_SETS_ADDED returns an array of DisplaySets that were added
@@ -260,8 +259,12 @@ function PanelStudyBrowserTracking({
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
 
     if (!shouldCollapseStudy) {
-      const madeInClient = true
-      requestDisplaySetCreationForStudy(DisplaySetService, StudyInstanceUID, madeInClient);
+      const madeInClient = true;
+      requestDisplaySetCreationForStudy(
+        DisplaySetService,
+        StudyInstanceUID,
+        madeInClient
+      );
     }
   }
 
@@ -426,6 +429,7 @@ function _mapDisplaySets(
         displaySetInstanceUID,
         // .. Any other data to pass
       },
+      bodyPartExamined: ds.getAttribute('images')[0].BodyPartExamined,
       isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
       viewportIdentificator,
     };

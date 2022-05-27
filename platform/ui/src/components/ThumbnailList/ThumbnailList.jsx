@@ -28,6 +28,7 @@ const ThumbnailList = ({
           onReject,
           imageSrc,
           imageAltText,
+          bodyPartExamined,
         }) => {
           const isActive =
             activeDisplaySetInstanceUID === displaySetInstanceUID;
@@ -50,6 +51,7 @@ const ThumbnailList = ({
                   onDoubleClick={() =>
                     onThumbnailDoubleClick(displaySetInstanceUID)
                   }
+                  bodyPartExamined={bodyPartExamined}
                 />
               );
             case 'thumbnailTracked':
@@ -71,6 +73,7 @@ const ThumbnailList = ({
                     onThumbnailDoubleClick(displaySetInstanceUID)
                   }
                   onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
+                  bodyPartExamined={bodyPartExamined}
                 />
               );
             case 'thumbnailNoImage':
@@ -91,6 +94,7 @@ const ThumbnailList = ({
                     onThumbnailDoubleClick(displaySetInstanceUID)
                   }
                   viewportIdentificator={viewportIdentificator}
+                  bodyPartExamined={bodyPartExamined}
                 />
               );
             default:

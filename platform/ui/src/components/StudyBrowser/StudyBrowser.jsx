@@ -30,7 +30,7 @@ const StudyBrowser = ({
   onClickUntrack,
   activeDisplaySetInstanceUID,
 }) => {
-  const { t } = useTranslation("StudyBrowser")
+  const { t } = useTranslation('StudyBrowser');
 
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
@@ -76,7 +76,10 @@ const StudyBrowser = ({
 
   return (
     <React.Fragment>
-      <div className="flex flex-row items-center justify-center h-16 p-4 border-b w-100 border-secondary-light bg-primary-dark" data-cy={"studyBrowser-panel"}>
+      <div
+        className="flex flex-row items-center justify-center h-16 p-4 border-b w-100 border-secondary-light bg-primary-dark"
+        data-cy={'studyBrowser-panel'}
+      >
         <ButtonGroup
           variant="outlined"
           color="inherit"
@@ -167,7 +170,7 @@ StudyBrowser.propTypes = {
   ),
 };
 
-const noop = () => { };
+const noop = () => {};
 
 StudyBrowser.defaultProps = {
   onClickTab: noop,
