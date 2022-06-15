@@ -51,10 +51,7 @@ function Header({
               ) : (
                 <div className="w-fit">
                   <Svg name="logo-aurabox" className="w-8 h-8 inline-block" />
-                  <p className="ml-4 text-white inline-block">
-                    {' '}
-                    Aurabox Viewer
-                  </p>
+                  <p className="ml-4 text-white inline-block"> Aurabox</p>
                 </div>
               )}
             </div>
