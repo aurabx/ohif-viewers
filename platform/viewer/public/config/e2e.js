@@ -8,7 +8,7 @@ window.config = {
   dataSources: [
     {
       friendlyName: 'StaticWado test data',
-      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
         name: 'DCM4CHEE',
@@ -23,11 +23,12 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
+        singlepart: 'video,thumbnail,pdf',
       },
     },
     // {
     //   friendlyName: 'StaticWado default data',
-    //   namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+    //   namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
     //   sourceName: 'dicomweb',
     //   configuration: {
     //     name: 'DCM4CHEE',
@@ -46,7 +47,7 @@ window.config = {
     // },
     {
       friendlyName: 'dicom json',
-      namespace: 'org.ohif.default.dataSourcesModule.dicomjson',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',
       configuration: {
         name: 'json',
@@ -54,7 +55,7 @@ window.config = {
     },
     {
       friendlyName: 'dicom local',
-      namespace: 'org.ohif.default.dataSourcesModule.dicomlocal',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
       sourceName: 'dicomlocal',
       configuration: {},
     },
@@ -101,12 +102,12 @@ window.config = {
     { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'] },
     { commandName: 'invertViewport', label: 'Invert', keys: ['i'] },
     {
-      commandName: 'flipViewportVertical',
+      commandName: 'flipViewportHorizontal',
       label: 'Flip Horizontally',
       keys: ['h'],
     },
     {
-      commandName: 'flipViewportHorizontal',
+      commandName: 'flipViewportVertical',
       label: 'Flip Vertically',
       keys: ['v'],
     },
