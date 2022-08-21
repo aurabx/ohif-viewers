@@ -54,6 +54,8 @@ export default function initWADOImageLoader(
       const xhrRequestHeaders = {
         // To prevent Preflight requests:
         accept: 'multipart/related; type=application/octet-stream',
+
+        // accept: 'image/jpeg; transfer-syntax=1.2.840.10008.1.2.4.51',
         //
         //accept: 'multipart/related; type="image/x-jls"',
         // 'multipart/related; type="image/x-jls", multipart/related; type="image/jls"; transfer-syntax="1.2.840.10008.1.2.4.80", multipart/related; type="image/x-jls", multipart/related; type="application/octet-stream"; transfer-syntax=*',
@@ -95,6 +97,8 @@ export default function initWADOImageLoader(
       const xhrRequestHeaders = {
         // To prevent Preflight requests:
         accept: 'multipart/related; type=application/octet-stream',
+
+        // accept: 'image/jpeg; transfer-syntax=1.2.840.10008.1.2.4.51',
         //
         //accept: 'multipart/related; type="image/x-jls"',
         // 'multipart/related; type="image/x-jls", multipart/related; type="image/jls"; transfer-syntax="1.2.840.10008.1.2.4.80", multipart/related; type="image/x-jls", multipart/related; type="application/octet-stream"; transfer-syntax=*',

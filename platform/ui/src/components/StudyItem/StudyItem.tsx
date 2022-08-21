@@ -31,8 +31,10 @@ const StudyItem = ({
         <div className="flex flex-row items-center justify-between pt-2 pb-2">
           <div className="text-base text-white">{date}</div>
           <div className="flex flex-row items-center text-base text-blue-300">
-            <Icon name="group-layers" className="w-4 mx-2 text-blue-300" />
-            {numInstances}
+            {numInstances !== 0 && (<>
+              <Icon name="group-layers" className="w-4 mx-2 text-blue-300" />
+              {numInstances}
+            </>)}
           </div>
         </div>
         <div className="flex flex-row py-1">
