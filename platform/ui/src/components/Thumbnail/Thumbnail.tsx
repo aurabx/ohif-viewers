@@ -20,6 +20,7 @@ const Thumbnail = ({
   onClick,
   onDoubleClick,
   bodyPartExamined,
+  modality,
 }) => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
@@ -77,6 +78,7 @@ const Thumbnail = ({
           </div>
         </div>
         <div className="text-base text-white break-all">{description}</div>
+        <div className="text-base text-white break-all">{modality}</div>
         <div className="text-base text-white break-all">{bodyPartExamined}</div>
       </div>
     </div>
@@ -105,6 +107,8 @@ Thumbnail.propTypes = {
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
+  bodyPartExamined: PropTypes.string,
+  modality: PropTypes.string,
 };
 
 Thumbnail.defaultProps = {
