@@ -46,14 +46,9 @@ function Header({
               <Icon name="chevron-left" className="w-8 text-primary-active" />
             )}
             <div className="ml-4">
-              {WhiteLabeling ? (
-                CustomLogo(React)
-              ) : (
-                <div className="w-fit">
-                  <Svg name="logo-aurabox" className="w-8 h-8 inline-block" />
-                  <p className="ml-4 text-white inline-block"> Aurabox</p>
-                </div>
-              )}
+              <div className="ml-4">
+                {WhiteLabeling ? CustomLogo(React) : <Svg name="logo-ohif" />}
+              </div>
             </div>
           </div>
         </div>
