@@ -1,5 +1,5 @@
 window.config = {
-  //routerBasename: '/viewers/v3',
+  // routerBasename: '/viewers/v3',
   routerBasename: '/',
   // whiteLabelling: {},
   extensions: [],
@@ -12,6 +12,7 @@ window.config = {
     prefetch: 10,
   },
   // filterQueryParam: false,
+  //studyListFunctionsEnabled: true,
   dataSources: [
     {
       friendlyName: 'dcmjs DICOMWeb Server',
