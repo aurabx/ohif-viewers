@@ -1,5 +1,5 @@
 window.config = {
-  // routerBasename: '/viewers/v3',
+  //routerBasename: '/viewers/v3',
   routerBasename: '/',
   // whiteLabelling: {},
   extensions: [],
@@ -12,7 +12,6 @@ window.config = {
     prefetch: 10,
   },
   // filterQueryParam: false,
-  //studyListFunctionsEnabled: true,
   dataSources: [
     {
       friendlyName: 'dcmjs DICOMWeb Server',
@@ -74,7 +73,6 @@ window.config = {
   //   },
   // },
   defaultDataSourceName: 'dicomweb',
-
   hotkeys: [
     {
       commandName: 'incrementActiveViewport',
@@ -105,17 +103,22 @@ window.config = {
     { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
     { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
     { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
+    // {
+    //   commandName: 'previousViewportDisplaySet',
+    //   label: 'Previous Series',
+    //   keys: ['pagedown'],
+    // },
+    // {
+    //   commandName: 'nextViewportDisplaySet',
+    //   label: 'Next Series',
+    //   keys: ['pageup'],
+    // },
     {
-      commandName: 'previousViewportDisplaySet',
-      label: 'Previous Series',
-      keys: ['pagedown'],
+      commandName: 'setToolActive',
+      commandOptions: { toolName: 'Zoom' },
+      label: 'Zoom',
+      keys: ['z'],
     },
-    {
-      commandName: 'nextViewportDisplaySet',
-      label: 'Next Series',
-      keys: ['pageup'],
-    },
-    { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
     // ~ Window level presets
     {
       commandName: 'windowLevelPreset1',
