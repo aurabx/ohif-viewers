@@ -1,14 +1,21 @@
-import cornerstone from 'cornerstone-core';
+import * as cornerstone from '@cornerstonejs/core';
+import { volumeLoader } from '@cornerstonejs/core';
+import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import cornerstoneWebImageLoader from 'cornerstone-web-image-loader';
 import dicomParser from 'dicom-parser';
 import { errorHandler } from '@ohif/core';
 
+const { registerVolumeLoader } = volumeLoader;
+
 let initialized = false;
 
-function initWebWorkers() {
+function initWebWorkers(appConfig) {
   const config = {
-    maxWebWorkers: Math.max(navigator.hardwareConcurrency - 1, 1),
+    maxWebWorkers: Math.min(
+      Math.max(navigator.hardwareConcurrency - 1, 1),
+      appConfig.maxNumberOfWebWorkers
+    ),
     startWebWorkersOnDemand: true,
     taskConfiguration: {
       decodeTask: {
@@ -25,7 +32,10 @@ function initWebWorkers() {
   }
 }
 
-export default function initWADOImageLoader(UserAuthenticationService) {
+export default function initWADOImageLoader(
+  UserAuthenticationService,
+  appConfig
+) {
   cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
   cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
 
@@ -33,7 +43,7 @@ export default function initWADOImageLoader(UserAuthenticationService) {
   cornerstoneWebImageLoader.external.cornerstone = cornerstone;
 
   cornerstoneWebImageLoader.configure({
-    beforeSend: function(xhr) {
+    beforeSend: function (xhr) {
       const headers = UserAuthenticationService.getAuthorizationHeader();
 
       // Request:
@@ -59,9 +69,22 @@ export default function initWADOImageLoader(UserAuthenticationService) {
       errorHandler.getHTTPErrorHandler(error);
     },
   });
+
+  registerVolumeLoader(
+    'cornerstoneStreamingImageVolume',
+    cornerstoneStreamingImageVolumeLoader
+  );
 
   cornerstoneWADOImageLoader.configure({
-    beforeSend: function(xhr) {
+    decodeConfig: {
+      // !! IMPORTANT !!
+      // We should set this flag to false, since, by default cornerstone-wado-image-loader
+      // will convert everything to integers (to be able to work with cornerstone-2d).
+      // Until the default is set to true (which is the case for cornerstone3D),
+      // we should set this flag to false.
+      convertFloatPixelDataToInt: false,
+    },
+    beforeSend: function (xhr) {
       const headers = UserAuthenticationService.getAuthorizationHeader();
 
       // Request:
@@ -70,10 +93,7 @@ export default function initWADOImageLoader(UserAuthenticationService) {
       // For now we use image/jls and image/x-jls because some servers still use the old type
       // http://dicom.nema.org/medical/dicom/current/output/html/part18.html
       const xhrRequestHeaders = {
-        // To prevent Preflight requests:
-        accept: 'multipart/related; type=application/octet-stream',
-        //
-        //accept: 'multipart/related; type="image/x-jls"',
+        Accept: 'multipart/related; type=application/octet-stream',
         // 'multipart/related; type="image/x-jls", multipart/related; type="image/jls"; transfer-syntax="1.2.840.10008.1.2.4.80", multipart/related; type="image/x-jls", multipart/related; type="application/octet-stream"; transfer-syntax=*',
       };
 
@@ -88,5 +108,5 @@ export default function initWADOImageLoader(UserAuthenticationService) {
     },
   });
 
-  initWebWorkers();
+  initWebWorkers(appConfig);
 }
