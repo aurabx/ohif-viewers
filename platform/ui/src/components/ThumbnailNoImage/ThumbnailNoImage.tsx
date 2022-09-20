@@ -16,6 +16,7 @@ const ThumbnailNoImage = ({
   onReject,
   dragData,
   isActive,
+  bodyPartExamined,
 }) => {
   const [collectedProps, drag, dragPreview] = useDrag({
     type: "displayset",
@@ -66,6 +67,9 @@ const ThumbnailNoImage = ({
             <div className="ml-4 text-base text-white break-all">
               {description}
             </div>
+            <div className="ml-4 text-base text-white break-all">
+              {bodyPartExamined}
+            </div>
           </div>
         </div>
       </div>
@@ -94,6 +98,7 @@ ThumbnailNoImage.propTypes = {
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
   isActive: PropTypes.bool.isRequired,
+  bodyPartExamined: PropTypes.string,
 };
 
 export default ThumbnailNoImage;

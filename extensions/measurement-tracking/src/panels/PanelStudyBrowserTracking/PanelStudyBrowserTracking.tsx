@@ -416,7 +416,9 @@ function _mapDisplaySets(
         ? thumbnailDisplaySets
         : thumbnailNoImageDisplaySets;
 
-    const { displaySetInstanceUID } = ds;
+    const { displaySetInstanceUID, images } = ds;
+
+    const BodyPartExamined = images && images.length > 0 && images[0].BodyPartExamined ? images[0].BodyPartExamined : '';
 
     const thumbnailProps = {
       displaySetInstanceUID,
@@ -431,9 +433,9 @@ function _mapDisplaySets(
       dragData: {
         type: 'displayset',
         displaySetInstanceUID,
-        // .. Any other data to pass
+        // ... Any other data to pass
       },
-      bodyPartExamined: ds.getImage(0).BodyPartExamined,
+      bodyPartExamined: BodyPartExamined,
       isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
       viewportIdentificator,
     };

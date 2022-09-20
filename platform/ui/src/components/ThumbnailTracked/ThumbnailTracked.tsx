@@ -21,6 +21,7 @@ const ThumbnailTracked = ({
   isTracked,
   isActive,
   bodyPartExamined,
+  modality,
 }) => {
   const trackedIcon = isTracked ? 'circled-checkmark' : 'dotted-circle';
   const viewportIdentificatorLabel = viewportIdentificator.join(', ');
@@ -118,6 +119,7 @@ const ThumbnailTracked = ({
         onClick={onClick}
         onDoubleClick={onDoubleClick}
         bodyPartExamined={bodyPartExamined}
+        modality={modality}
       />
     </div>
   );
@@ -148,6 +150,8 @@ ThumbnailTracked.propTypes = {
   viewportIdentificator: PropTypes.array,
   isTracked: PropTypes.bool,
   isActive: PropTypes.bool.isRequired,
+  bodyPartExamined: PropTypes.string,
+  modality: PropTypes.string,
 };
 
 export default ThumbnailTracked;

@@ -54,6 +54,7 @@ const ThumbnailList = ({
                     onThumbnailDoubleClick(displaySetInstanceUID)
                   }
                   bodyPartExamined={bodyPartExamined}
+                  modality={modality}
                 />
               );
             case 'thumbnailTracked':
@@ -76,6 +77,7 @@ const ThumbnailList = ({
                   }
                   onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
                   bodyPartExamined={bodyPartExamined}
+                  modality={modality}
                 />
               );
             case 'thumbnailNoImage':
@@ -97,6 +99,7 @@ const ThumbnailList = ({
                   }
                   viewportIdentificator={viewportIdentificator}
                   bodyPartExamined={bodyPartExamined}
+                  modality={modality}
                 />
               );
             default:
