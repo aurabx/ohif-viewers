@@ -1,5 +1,5 @@
-export const defaultProtocol = {
-  id: 'default',
+const auraDefault = {
+  id: 'auraDefault',
   locked: true,
   hasUpdatedPriorsInformation: false,
   name: 'Default',
@@ -9,12 +9,13 @@ export const defaultProtocol = {
   editableBy: {},
   protocolMatchingRules: [],
   toolGroupIds: ['default'],
+  //imageLoadStrategy: 'default', // "default" , "interleaveTopToBottom",  "interleaveCenter"
   stages: [
     {
-      id: 'hYbmMy3b7pz7GLiaT',
+      id: 'YbmMy3b7pz7GLiaT',
       name: 'default',
       viewportStructure: {
-        type: 'grid',
+        layoutType: 'grid',
         properties: {
           rows: 1,
           columns: 1,
@@ -28,7 +29,7 @@ export const defaultProtocol = {
           // Matches displaysets, NOT series
           seriesMatchingRules: [
             {
-              id: 'GPEYqFLv2dwzCM322',
+              id: 'YbmMy3b7pz7GLiaT',
               weight: 4,
               attribute: 'SeriesDescription',
               constraint: {
@@ -36,7 +37,7 @@ export const defaultProtocol = {
                   value: 'Report',
                 },
               },
-              required: false,
+              required: true,
             },
           ],
           studyMatchingRules: [],
@@ -59,23 +60,19 @@ export const defaultProtocol = {
           ],
         },
       ],
-      createdDate: '2022-09-21T18:32:42.850Z',
+      createdDate: '2021-02-23T18:32:42.850Z',
     },
   ],
   numberOfPriorsReferenced: -1,
 };
 
-const getHangingProtocolModule = ({
-  servicesManager,
-  commandsManager,
-  extensionManager,
-}) => {
+function getHangingProtocolModule() {
   return [
     {
-      name: 'default',
-      protocols: [defaultProtocol],
+      id: auraDefault.id,
+      protocol: auraDefault,
     },
   ];
-};
+}
 
 export default getHangingProtocolModule;

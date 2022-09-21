@@ -7,10 +7,6 @@ import initToolGroups from './initToolGroups.js';
 // Also, SM is not a simple imaging modalities, so exclude it.
 const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
 
-const cs3d = {
-  viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
-};
-
 const aurabox = {
   hangingProtocols: 'aurabox-extension.hangingProtocolModule.default',
 };
@@ -182,7 +178,8 @@ function modeFactory() {
     ],
     extensions: extensionDependencies,
     //hangingProtocols: [ohif.hangingProtocols],
-    hangingProtocols: [aurabox.hangingProtocols],
+    //hangingProtocols: [aurabox.hangingProtocols],
+    hangingProtocol: 'auraDefault',
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must
