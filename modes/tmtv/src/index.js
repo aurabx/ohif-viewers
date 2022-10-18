@@ -8,7 +8,6 @@ import setFusionActiveVolume from './utils/setFusionActiveVolume.js';
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  hangingProtocols: '@ohif/extension-default.hangingProtocolModule.default',
   measurements: '@ohif/extension-default.panelModule.measure',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
@@ -18,7 +17,7 @@ const cs3d = {
 };
 
 const tmtv = {
-  hangingProtocols: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
+  hangingProtocol: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
   ROIThresholdPanel: '@ohif/extension-tmtv.panelModule.ROIThresholdSeg',
 };
@@ -188,7 +187,7 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocols: [tmtv.hangingProtocols],
+    hangingProtocol: tmtv.hangingProtocol,
     sopClassHandlers: [ohif.sopClassHandler],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
