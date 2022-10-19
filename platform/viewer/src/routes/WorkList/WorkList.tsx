@@ -326,13 +326,13 @@ function WorkList({
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                  return {
-                    description: s.description || '(empty)',
-                    seriesNumber: s.seriesNumber || '',
-                    modality: s.modality || '',
-                    instances: s.numSeriesInstances || '',
-                  };
-                })
+                return {
+                  description: s.description || '(empty)',
+                  seriesNumber: s.seriesNumber || '',
+                  modality: s.modality || '',
+                  instances: s.numSeriesInstances || '',
+                };
+              })
               : []
           }
         >
@@ -350,7 +350,7 @@ function WorkList({
               <Link
                 key={i}
                 to={`${mode.routeName}?StudyInstanceUIDs=${studyInstanceUid}`}
-                // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+              // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"
@@ -358,7 +358,7 @@ function WorkList({
                   disabled={!isValidMode}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
                   className={classnames('font-bold', { 'ml-2': !isFirst })}
-                  onClick={() => {}}
+                  onClick={() => { }}
                 >
                   {t(`Modes:${mode.displayName}`)}
                 </Button>
@@ -417,6 +417,17 @@ function WorkList({
         }),
     },
   ];
+
+  if (appConfig.oidc) {
+    menuOptions.push({
+      icon: 'power-off',
+      title: t('Header:Logout'),
+      onClick: () => {
+        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
+
+      }
+    });
+  }
 
   return (
     <div
