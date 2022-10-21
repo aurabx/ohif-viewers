@@ -8,7 +8,8 @@ import initToolGroups from './initToolGroups.js';
 const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
 
 const aurabox = {
-  hangingProtocols: 'aurabox-extension.hangingProtocolModule.default',
+  //hangingProtocols: 'aurabox-extension.hangingProtocolModule.default',
+  hangingProtocol: 'auraDefault',
 };
 
 const ohif = {
@@ -65,12 +66,18 @@ function modeFactory() {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const { ToolBarService, ToolGroupService } = servicesManager.services;
+      const {
+        ToolBarService,
+        ToolGroupService,
+        SyncGroupService,
+      } = servicesManager.services;
 
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, ToolGroupService, commandsManager);
 
       let unsubscribe;
+
+      console.log('find:SyncGroupService', SyncGroupService);
 
       const activateTool = () => {
         ToolBarService.recordInteraction({
@@ -109,6 +116,8 @@ function modeFactory() {
         'Pan',
         'Capture',
         'Layout',
+        // 'MPR',
+        'SyncScroll',
         'MoreTools',
       ]);
     },
@@ -179,7 +188,7 @@ function modeFactory() {
     extensions: extensionDependencies,
     //hangingProtocols: [ohif.hangingProtocols],
     //hangingProtocols: [aurabox.hangingProtocols],
-    hangingProtocol: 'auraDefault',
+    hangingProtocol: aurabox.hangingProtocol,
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must

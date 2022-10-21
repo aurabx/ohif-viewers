@@ -283,9 +283,48 @@ const toolbarButtons = [
     },
   },
   {
+    id: 'SyncScroll',
+    type: 'ohif.action',
+    props: {
+      icon: 'tool-capture',
+      label: 'Sync Scroll',
+      type: 'toggle',
+      commands: [
+        {
+          itemId: 'SyncScroll',
+          interactionType: 'toggle',
+          commandName: 'toggleSynchronizer',
+          commandOptions: { toggledState: true },
+          context: 'CORNERSTONE',
+        },
+      ],
+    },
+  },
+  {
     id: 'Layout',
     type: 'ohif.layoutSelector',
+    props: {
+      rows: 3,
+      columns: 3,
+    },
   },
+  // Todo: MPR not ready yet for SEG support, not activating it now
+  // {
+  //   id: 'MPR',
+  //   type: 'ohif.action',
+  //   props: {
+  //     icon: 'old-play',
+  //     label: 'MPR',
+  //     type: 'action',
+  //     commands: [
+  //       {
+  //         commandName: 'setHangingProtocol',
+  //         commandOptions: { protocolId: 'mpr' },
+  //         context: 'CORNERSTONE',
+  //       },
+  //     ],
+  //   },
+  // },
   // More...
   {
     id: 'MoreTools',

@@ -17,8 +17,8 @@ const auraDefault = {
       viewportStructure: {
         layoutType: 'grid',
         properties: {
-          rows: 1,
-          columns: 1,
+          rows: 2,
+          columns: 2,
         },
       },
       displaySets: [
@@ -45,12 +45,33 @@ const auraDefault = {
       ],
       viewports: [
         {
+          // viewportSettings: [
+          //   {
+          //     options: {
+          //       itemId: 'SyncScroll',
+          //       interactionType: 'toggle',
+          //       commandName: 'toggleSynchronizer',
+          //       commandOptions: { toggledState: true },
+          //     },
+          //     commandName: 'setToolActive',
+          //     type: 'props',
+          //   },
+          // ],
           viewportOptions: {
             toolGroupId: 'default',
             // initialImageOptions: {
             //   index: 180,
-            //   preset: 'middle', // 'first', 'last', 'middle'
+            //   preset: 'first', // 'first', 'last', 'middle'
             // },
+            //viewportId: 'default',
+            viewportType: 'stack',
+            orientation: 'axial',
+            syncGroups: [
+              {
+                type: 'zoomPan',
+                id: 'axialSync',
+              },
+            ],
           },
           displaySets: [
             {

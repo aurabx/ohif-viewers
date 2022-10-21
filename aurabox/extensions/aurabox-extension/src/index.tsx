@@ -1,5 +1,25 @@
 import { id } from './id';
 import getHangingProtocolModule from './getHangingProtocolModule.js';
+import initialZoomPan from './synchronizers/createInitialZoomPanSynchronizer';
+import React from 'react';
+import CornerstoneViewportService from '@ohif/extension-cornerstone/src/services/ViewportService/CornerstoneViewportService';
+import ToolGroupService from './services/ToolGroupService';
+import SyncGroupService from './services/SyncGroupService';
+
+const Component = React.lazy(() => {
+  return import(
+    /* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport'
+  );
+});
+
+const OHIFCornerstoneViewport = props => {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <Component {...props} />
+    </React.Suspense>
+  );
+};
+
 /**
  * You can remove any of the following modules if you don't need them.
  */
@@ -20,7 +40,26 @@ export default {
     servicesManager,
     commandsManager,
     configuration = {},
-  }) => {},
+  }) => {
+    // const {
+    //   //HangingProtocolService,
+    //   SyncGroupService,
+    // } = servicesManager.services;
+    // HangingProtocolService.addCustomAttribute(
+    //   'timepointId',
+    //   'TimePoint ID',
+    //   getTimePointUID
+    // );
+    console.log('find:about to create synchronizer synchronizer');
+    // SyncGroupService.setSynchronizer('synchronizer', initialZoomPan);
+
+    servicesManager.registerService(
+      CornerstoneViewportService(servicesManager)
+    );
+    servicesManager.registerService(ToolGroupService(servicesManager));
+    servicesManager.registerService(SyncGroupService(servicesManager));
+    //await init({ servicesManager, commandsManager, configuration, appConfig });
+  },
   /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,
@@ -42,7 +81,32 @@ export default {
     servicesManager,
     commandsManager,
     extensionManager,
-  }) => {},
+  }) => {
+    const ExtendedOHIFCornerstoneViewport = props => {
+      // const onNewImageHandler = jumpData => {
+      //   commandsManager.runCommand('jumpToImage', jumpData);
+      // };
+      const { ToolBarService } = servicesManager.services;
+
+      console.log('finding:props', props);
+
+      return (
+        <OHIFCornerstoneViewport
+          {...props}
+          ToolBarService={ToolBarService}
+          servicesManager={servicesManager}
+          commandsManager={commandsManager}
+        />
+      );
+    };
+
+    return [
+      {
+        name: 'cornerstone-aura',
+        component: ExtendedOHIFCornerstoneViewport,
+      },
+    ];
+  },
   /**
    * ToolbarModule should provide a list of tool buttons that will be available in OHIF
    * for Modes to consume and use in the toolbar. Each tool button is defined by
