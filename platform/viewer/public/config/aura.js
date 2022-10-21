@@ -12,11 +12,38 @@ window.config = {
     prefetch: 10,
   },
   // filterQueryParam: false,
+
+  defaultDataSourceName: 'dicomweb',
+
   dataSources: [
     {
       friendlyName: 'Aurabox DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
+      configuration: {
+        name: 'Aurabox DICOMWeb',
+        wadoUriRoot: 'https://uhura.lndo.site/wado-rs',
+        qidoRoot: 'https://uhura.lndo.site/wado-rs',
+        wadoRoot: 'https://uhura.lndo.site/wado-rs',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: false,
+
+        // requestOptions: {
+        //     auth: (options) => {
+        //         return 'Bearer ' + 'WHEREAMI' //token
+        //     }
+        // }
+      },
+    },
+    {
+      friendlyName: 'Aurabox DICOMWeb Server',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb2',
       configuration: {
         name: 'Aurabox DICOMWeb',
         wadoUriRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/wado-rs',
@@ -73,7 +100,7 @@ window.config = {
 
   headers: {
     Authorization:
-      'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1LmF1cmFib3guYXBwIiwiYXVkIjoiaHR0cHM6Ly9hdS5hdXJhYm94LmFwcCIsInN1YiI6IjExMjA3OGE5LTlmODMtNDI0NC1iY2U5LWEyZDU4NTRhZDc2NCIsInBhdGllbnQiOiI3YjNlZmNmNy05ZjlmLTQ1YzEtODI0Yy0zZGRhMzc5ODYyMjIiLCJzdG9yZV9pZCI6IjlkYTliZWM0LTE1N2QtNDg1Zi1hMjY0LTNhZWQyZTBiZjM2MiIsImlhdCI6MTY2MzczNzM3MywibmJmIjoxNjYzNzM3MzczLCJleHAiOjE2NjM4MjM3NzN9.hIJBaJwLGQr2b4Pd8ayADDE30jdXa6MgMkOx-jmYCpIvFcz798XNRexNV9QSnRqUZg9ZLlhdTAK4Pm7V0gvz5l3LozGaIgEuHTW0CDaoiSbCHumTuDk1TraVvs6LHrV-UX5-WEOnAWZJAe5ePzGcjAKzZLkcM-qLKP6H8NM3H1Fy4MPA4tOnBVbIw6Kvhy25rTdoEKtyAysrhYSf7YFZkVYNVj1Ul1yLrZ7080mkxFxSTDCyfIm9okdHE2Y8mhy3FhOAGtubXs8eG3s0qABQ-1k_gseFNu2fPuWdIOA4gCYU7vI-yP2HuSiHNLBFmGUkvDbWfCxqnQAuUOdrABGumg',
+      'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1cmEubG5kby5zaXRlIiwiYXVkIjoiaHR0cHM6Ly9hdXJhLmxuZG8uc2l0ZSIsInN1YiI6IjAzMjUzMGViLWE4MGQtNDcyYi04Y2IyLWRlYTUwMmFkMDc3YyIsInBhdGllbnQiOiIzYTA4MjgyMi1jOTFkLTRmNTUtOGFkNy04MWRmNjQ0OGU0ZTYiLCJzdG9yZV9pZCI6ImE4MzJjOTY5LTgxNjQtNDQ4ZS1hYjM5LTEyYWQ4NjA0NTIyOCIsImlhdCI6MTY2NjIyOTA4NCwibmJmIjoxNjY2MjI5MDg0LCJleHAiOjE2NjYzMTU0ODR9.UXDqv43d8aLEziRRB1bBVirIIhNGScQXug6wsT-skgR607L33gvlWGEpjz0mRtXeDgK0_4L79Kad-IHfuq5x-oc5Y4L3NGtQEarxx088yIi7VR38WJpsx0O8RmDpp-DWECfZiT-gc0yX3YUj4X7YbsKUrgCrwvaHQRM-BQrmNe7gxnPvoBjaYApaU73ltPH_KxP_VOgcPm2lF_Wn40WEOhyYZxhVzmZQQ7_9bO91oSksk--gTehshUxqDswICRghe7dO1wW__jcIZddSvlIecgVWSbVh6nCiUk5R6zZMQx_NtWbIPN01200PWfaXMlVoug7TdAYmw88gkTKxAgjLAg',
   },
 
   httpErrorHandler: error => {
@@ -102,7 +129,7 @@ window.config = {
   //       ))
   //   },
   // },
-  defaultDataSourceName: 'dicomweb',
+
   hotkeys: [
     {
       commandName: 'incrementActiveViewport',
