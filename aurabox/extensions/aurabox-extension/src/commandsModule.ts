@@ -169,13 +169,13 @@ const commandsModule = ({ servicesManager }) => {
       SyncGroupService.addViewportToSyncGroup(
         firstViewport.viewportId,
         firstViewport.renderingEngineId,
-        [asSyncGroup('zoompan')]
+        [syncGroup]
       );
 
       SyncGroupService.addViewportToSyncGroup(
         secondViewport.viewportId,
         secondViewport.renderingEngineId,
-        [asSyncGroup('zoompan')]
+        [syncGroup]
       );
 
       // const synchronizer = SynchronizerManager.getSynchronizer(
