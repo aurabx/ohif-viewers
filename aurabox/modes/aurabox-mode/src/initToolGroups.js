@@ -37,7 +37,9 @@ function initDefaultToolGroup(
       { toolName: toolNames.Magnify },
     ],
     // enabled
+    // enabled: [{ toolName: toolNames.SegmentationDisplay }],
     // disabled
+    disabled: [{ toolName: 'Link' }],
   };
 
   const toolsConfig = {
@@ -100,6 +102,10 @@ function initSRToolGroup(extensionManager, ToolGroupService, commandsManager) {
       },
       {
         toolName: toolNames.StackScrollMouseWheel,
+        bindings: [],
+      },
+      {
+        toolName: 'Link',
         bindings: [],
       },
     ],

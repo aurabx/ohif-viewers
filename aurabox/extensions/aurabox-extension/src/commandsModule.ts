@@ -4,33 +4,39 @@ import {
   volumeLoader,
   cache,
   utilities as csUtils,
+  Enums as coreEnums,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
   Enums,
   segmentation,
   utilities as csToolsUtils,
+  SynchronizerManager,
 } from '@cornerstonejs/tools';
+import {
+  getEnabledElement as OHIFgetEnabledElement,
+  setEnabledElement,
+} from '@ohif/extension-cornerstone/src/state';
+import { SyncGroup } from '@ohif/extension-cornerstone/src/services/SyncGroupService/SyncGroupService';
+//import { Types } from '@ohif/core';
 
-import { Types } from '@ohif/core';
-import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
-
-import { getEnabledElement as OHIFgetEnabledElement } from './state';
-import callInputDialog from './utils/callInputDialog';
-import { setColormap } from './utils/colormap/transferFunctionHelpers';
+const asSyncGroup = (syncGroup: string | SyncGroup): SyncGroup =>
+  typeof syncGroup === 'string' ? { type: syncGroup } : syncGroup;
 
 const commandsModule = ({ servicesManager }) => {
   const {
+    // CineService,
+    // UIDialogService,
+    // DisplaySetService,
+    // UINotificationService,
+
     ViewportGridService,
     ToolGroupService,
-    CineService,
     ToolBarService,
-    UIDialogService,
     CornerstoneViewportService,
     SegmentationService,
-    DisplaySetService,
     HangingProtocolService,
-    UINotificationService,
+    SyncGroupService,
   } = servicesManager.services;
 
   function _getActiveViewportEnabledElement() {
@@ -39,6 +45,8 @@ const commandsModule = ({ servicesManager }) => {
     const enabledElement = getEnabledElement(element);
     return enabledElement;
   }
+
+  //const defaultGroup = {} as SyncGroup;
 
   function _getToolGroup(toolGroupId) {
     let toolGroupIdToUse = toolGroupId;
@@ -75,32 +83,127 @@ const commandsModule = ({ servicesManager }) => {
   }
 
   const actions = {
-    getActiveViewportEnabledElement: () => {
-      return _getActiveViewportEnabledElement();
-    },
-    setViewportActive: ({ viewportId }) => {
-      const viewportInfo = CornerstoneViewportService.getViewportInfo(
-        viewportId
+    toggleLink({ toggledState }) {
+      console.log('find:toggledState', toggledState);
+
+      const { viewports } = ViewportGridService.getState();
+
+      const syncGroup = asSyncGroup('zoompan');
+
+      console.log('find:viewports', viewports);
+
+      const cameraPositionSynchronizer = SynchronizerManager.createSynchronizer(
+        'synchronizerName',
+        coreEnums.Events.CAMERA_MODIFIED,
+        (
+          synchronizerInstance,
+          sourceViewport,
+          targetViewport,
+          cameraModifiedEvent
+        ) => {
+          // Synchronization logic should go here
+          //console.log('find:synchronizerInstance', synchronizerInstance);
+          //console.log('find:sourceViewport', sourceViewport);
+          console.log('find:targetViewport', targetViewport);
+          //console.log('find:cameraModifiedEvent', cameraModifiedEvent);
+        }
       );
-      if (!viewportInfo) {
-        console.warn('No viewport found for viewportId:', viewportId);
-        return;
+
+      for (const viewportKey in viewports) {
+        console.log('find:viewportKey', viewportKey);
+        const key = parseInt(viewportKey);
+
+        const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
+          key
+        );
+
+        // console.log('find:viewportInfo', viewportInfo);
+        if (key === 0) {
+          cameraPositionSynchronizer.addSource(viewportInfo);
+        } else {
+          cameraPositionSynchronizer.addTarget(viewportInfo);
+        }
+
+        SyncGroupService.addViewportToSyncGroup(
+          viewportInfo.viewportId,
+          viewportInfo.renderingEngineId,
+          [syncGroup]
+        );
       }
 
-      const viewportIndex = viewportInfo.getViewportIndex();
-      ViewportGridService.setActiveViewportIndex(viewportIndex);
-    },
-    arrowTextCallback: ({ callback, data }) => {
-      callInputDialog(UIDialogService, data, callback);
-    },
-    toggleCine: () => {
-      const { viewports } = ViewportGridService.getState();
-      const { isCineEnabled } = CineService.getState();
-      CineService.setIsCineEnabled(!isCineEnabled);
-      ToolBarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
-      viewports.forEach((_, index) =>
-        CineService.setCine({ id: index, isPlaying: false })
+      console.log('find:viewports', viewports);
+
+      const firstViewport = CornerstoneViewportService.getViewportInfoByIndex(
+        0
       );
+
+      const firstViewportInfo = CornerstoneViewportService.getCornerstoneViewport(
+        firstViewport.getViewportId()
+      );
+
+      const secondViewport = CornerstoneViewportService.getViewportInfoByIndex(
+        1
+      );
+
+      const secondViewportInfo = CornerstoneViewportService.getCornerstoneViewport(
+        secondViewport.getViewportId()
+      );
+
+      const syncGroups = firstViewport.getSyncGroups();
+
+      console.log('find:syncGroups', syncGroups);
+      // SyncGroup
+      //const viewportIndex = viewportInfo.getViewportIndex();
+      //setEnabledElement(viewportIndex, element);
+      //const renderingEngineId = viewportInfo.getRenderingEngineId();
+
+      // console.log('find:firstViewport', firstViewport);
+      // console.log('find:secondViewport', secondViewport);
+
+      // cameraPositionSynchronizer.addSource(firstViewport);
+      // cameraPositionSynchronizer.addTarget(secondViewport);
+
+      cameraPositionSynchronizer.add(firstViewport);
+      cameraPositionSynchronizer.add(secondViewport);
+
+      SyncGroupService.addViewportToSyncGroup(
+        firstViewport.viewportId,
+        firstViewport.renderingEngineId,
+        [asSyncGroup('zoompan')]
+      );
+
+      SyncGroupService.addViewportToSyncGroup(
+        secondViewport.viewportId,
+        secondViewport.renderingEngineId,
+        [asSyncGroup('zoompan')]
+      );
+
+      // const synchronizer = SynchronizerManager.getSynchronizer(
+      //   cameraSynchronizerId
+      // );
+      //
+      // if (!synchronizer) {
+      //   return;
+      // }
+      //
+      // if (toggle) {
+      //   synchronizer.add({
+      //     renderingEngineId: renderingEngineId,
+      //     viewportId: viewportId,
+      //   });
+      // } else {
+      //   synchronizer.remove({
+      //     renderingEngineId: renderingEngineId,
+      //     viewportId: viewportId,
+      //   });
+      // }
+
+      // const { isCineEnabled } = CineService.getState();
+      // CineService.setIsCineEnabled(!isCineEnabled);
+      // ToolBarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
+      // viewports.forEach((_, index) =>
+      //   CineService.setCine({ id: index, isPlaying: false })
+      // );
     },
     setWindowLevel({ window, level, toolGroupId }) {
       // convert to numbers
@@ -206,37 +309,6 @@ const commandsModule = ({ servicesManager }) => {
         return;
       }
     },
-    showDownloadViewportModal: () => {
-      const { activeViewportIndex } = ViewportGridService.getState();
-      const { UIModalService } = servicesManager.services;
-
-      if (UIModalService) {
-        UIModalService.show({
-          content: CornerstoneViewportDownloadForm,
-          title: 'Download High Quality Image',
-          contentProps: {
-            activeViewportIndex,
-            onClose: UIModalService.hide,
-            CornerstoneViewportService,
-          },
-        });
-      }
-    },
-    rotateViewport: ({ rotation }) => {
-      const enabledElement = _getActiveViewportEnabledElement();
-      if (!enabledElement) {
-        return;
-      }
-
-      const { viewport } = enabledElement;
-
-      if (viewport instanceof StackViewport) {
-        const { rotation: currentRotation } = viewport.getProperties();
-        const newRotation = (currentRotation + rotation) % 360;
-        viewport.setProperties({ rotation: newRotation });
-        viewport.render();
-      }
-    },
     flipViewportHorizontal: () => {
       const enabledElement = _getActiveViewportEnabledElement();
 
@@ -249,21 +321,6 @@ const commandsModule = ({ servicesManager }) => {
       if (viewport instanceof StackViewport) {
         const { flipHorizontal } = viewport.getCamera();
         viewport.setCamera({ flipHorizontal: !flipHorizontal });
-        viewport.render();
-      }
-    },
-    flipViewportVertical: () => {
-      const enabledElement = _getActiveViewportEnabledElement();
-
-      if (!enabledElement) {
-        return;
-      }
-
-      const { viewport } = enabledElement;
-
-      if (viewport instanceof StackViewport) {
-        const { flipVertical } = viewport.getCamera();
-        viewport.setCamera({ flipVertical: !flipVertical });
         viewport.render();
       }
     },
@@ -387,30 +444,6 @@ const commandsModule = ({ servicesManager }) => {
 
       return labelmapVolumes;
     },
-    setViewportColormap: ({
-      viewportIndex,
-      displaySetInstanceUID,
-      colormap,
-      immediate = false,
-    }) => {
-      const viewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
-        viewportIndex
-      );
-
-      const actorEntries = viewport.getActors();
-
-      const actorEntry = actorEntries.find(actorEntry => {
-        return actorEntry.uid === displaySetInstanceUID;
-      });
-
-      const { actor: volumeActor } = actorEntry;
-
-      setColormap(volumeActor, colormap);
-
-      if (immediate) {
-        viewport.render();
-      }
-    },
     incrementActiveViewport: () => {
       const { activeViewportIndex, viewports } = ViewportGridService.getState();
       const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
@@ -511,21 +544,12 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: [],
       options: {},
     },
-    toggleCine: {
-      commandFn: actions.toggleCine,
+    toggleLink: {
+      commandFn: actions.toggleLink,
       storeContexts: [],
       options: {},
     },
-    arrowTextCallback: {
-      commandFn: actions.arrowTextCallback,
-      storeContexts: [],
-      options: {},
-    },
-    setViewportActive: {
-      commandFn: actions.setViewportActive,
-      storeContexts: [],
-      options: {},
-    },
+
     createSegmentationForDisplaySet: {
       commandFn: actions.createSegmentationForDisplaySet,
       storeContexts: [],
@@ -537,16 +561,6 @@ const commandsModule = ({ servicesManager }) => {
       options: {},
     },
 
-    getLabelmapVolumes: {
-      commandFn: actions.getLabelmapVolumes,
-      storeContexts: [],
-      options: {},
-    },
-    setViewportColormap: {
-      commandFn: actions.setViewportColormap,
-      storeContexts: [],
-      options: {},
-    },
     setHangingProtocol: {
       commandFn: actions.setHangingProtocol,
       storeContexts: [],

@@ -17,8 +17,8 @@ const auraDefault = {
       viewportStructure: {
         layoutType: 'grid',
         properties: {
-          rows: 1,
-          columns: 1,
+          rows: 2,
+          columns: 2,
         },
       },
       displaySets: [

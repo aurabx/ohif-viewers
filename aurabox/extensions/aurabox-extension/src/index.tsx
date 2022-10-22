@@ -1,5 +1,6 @@
 import { id } from './id';
 import getHangingProtocolModule from './getHangingProtocolModule.js';
+import commandsModule from './commandsModule.ts';
 /**
  * You can remove any of the following modules if you don't need them.
  */
@@ -93,11 +94,13 @@ export default {
    * object of functions, definitions is an object of available commands, their
    * options, and defaultContext is the default context for the command to run against.
    */
-  getCommandsModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  getCommandsModule({ servicesManager, commandsManager, extensionManager }) {
+    return commandsModule({
+      servicesManager,
+      commandsManager,
+      extensionManager,
+    });
+  },
   /**
    * ContextModule should provide a list of context that will be available in OHIF
    * and will be provided to the Modes. A context is a state that is shared OHIF.

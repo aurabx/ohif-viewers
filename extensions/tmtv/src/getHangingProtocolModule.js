@@ -14,7 +14,8 @@ const ptCT = {
     'mipToolGroup',
   ],
   imageLoadStrategy: 'interleaveTopToBottom', // "default" , "interleaveTopToBottom",  "interleaveCenter"
-  protocolMatchingRules: [
+  protocolMatchingRules: [],
+  protocolMatchingRuleszzz: [
     {
       attribute: 'ModalitiesInStudy',
       constraint: {

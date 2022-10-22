@@ -55,6 +55,24 @@ function _createWwwcPreset(preset, title, subtitle) {
 }
 
 const toolbarButtons = [
+  // Link
+  {
+    id: 'Link',
+    type: 'ohif.action',
+    props: {
+      icon: 'link',
+      label: 'Link',
+      type: 'toggle',
+      commands: [
+        {
+          //commandName: 'toggleCrosshairs',
+          commandName: 'toggleLink',
+          commandOptions: {},
+          context: 'CORNERSTONE',
+        },
+      ],
+    },
+  },
   // Measurement
   {
     id: 'MeasurementTools',

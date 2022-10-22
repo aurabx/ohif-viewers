@@ -8,7 +8,7 @@ import initToolGroups from './initToolGroups.js';
 const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
 
 const aurabox = {
-  hangingProtocols: 'aurabox-extension.hangingProtocolModule.default',
+  hangingProtocols: 'auraDefault',
 };
 
 const ohif = {
@@ -71,7 +71,6 @@ function modeFactory() {
       initToolGroups(extensionManager, ToolGroupService, commandsManager);
 
       let unsubscribe;
-
       const activateTool = () => {
         ToolBarService.recordInteraction({
           groupId: 'WindowLevel',
@@ -103,12 +102,14 @@ function modeFactory() {
       ToolBarService.init(extensionManager);
       ToolBarService.addButtons(toolbarButtons);
       ToolBarService.createButtonSection('primary', [
+        'Link',
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
         'Pan',
         'Capture',
         'Layout',
+        // 'MPR',
         'MoreTools',
       ]);
     },
@@ -177,9 +178,8 @@ function modeFactory() {
       },
     ],
     extensions: extensionDependencies,
-    //hangingProtocols: [ohif.hangingProtocols],
-    //hangingProtocols: [aurabox.hangingProtocols],
-    hangingProtocol: 'auraDefault',
+    // Default protocol gets self-registered by default in the init
+    hangingProtocol: aurabox.hangingProtocols,
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must
