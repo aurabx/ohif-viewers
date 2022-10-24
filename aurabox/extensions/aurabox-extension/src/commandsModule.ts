@@ -88,7 +88,8 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewports } = ViewportGridService.getState();
 
-      const syncGroup = asSyncGroup('cameraposition');
+      //SynchronizerManager.getSynchronizer('cameraposition');
+      //const syncGroup = asSyncGroup('cameraposition');
 
       console.log('find:viewports', viewports);
       // const cameraPositionSynchronizer = SynchronizerManager.createSynchronizer(

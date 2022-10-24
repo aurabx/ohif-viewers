@@ -115,7 +115,8 @@ export default {
         {
           viewportOptions: {
             viewportId: 'ctAXIAL',
-            viewportType: 'volume',
+            //viewportType: 'volume',
+            viewportType: 'stack',
             orientation: 'axial',
             toolGroupId: 'ctToolGroup',
             initialImageOptions: {
@@ -220,12 +221,6 @@ export default {
                 id: 'ptWLSync',
                 source: true,
                 target: true,
-              },
-              {
-                type: 'voi',
-                id: 'ptFusionWLSync',
-                source: true,
-                target: false,
               },
             ],
           },
