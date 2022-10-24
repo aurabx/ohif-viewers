@@ -5,7 +5,7 @@ import {
 } from '@cornerstonejs/core';
 import { BaseTool } from '@cornerstonejs/tools/dist/esm';
 import { scrollVolume } from '@cornerstonejs/tools/dist/esm/utilities/scroll';
-class StackScrollMouseWheelTool extends BaseTool {
+class LinkTool extends BaseTool {
   constructor(
     toolProps = {},
     defaultToolProps = {
@@ -31,10 +31,9 @@ class StackScrollMouseWheelTool extends BaseTool {
       const volumeId = targetId.split('volumeId:')[1];
       scrollVolume(viewport, volumeId, delta);
     } else {
-      throw new Error('StackScrollMouseWheelTool: Unsupported viewport type');
+      throw new Error('LinkTool: Unsupported viewport type');
     }
   }
 }
-StackScrollMouseWheelTool.toolName = 'Link';
-export default StackScrollMouseWheelTool;
-//# sourceMappingURL=StackScrollToolMouseWheelTool.js.map
+LinkTool.toolName = 'Link';
+export default LinkTool;

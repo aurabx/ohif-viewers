@@ -21,6 +21,62 @@ export default {
   ],
   toolGroupIds: ['default'],
   imageLoadStrategy: 'default', // "default" , "interleaveTopToBottom",  "interleaveCenter"
+
+  displaySetSelectors: {
+    ctDisplaySet: {
+      seriesMatchingRules: [
+        {
+          weight: 1,
+          attribute: 'Modality',
+          constraint: {
+            equals: {
+              value: 'CT',
+            },
+          },
+          required: true,
+        },
+        {
+          attribute: 'SeriesDescription',
+          constraint: {
+            contains: 'CT',
+          },
+        },
+        {
+          attribute: 'SeriesDescription',
+          constraint: {
+            contains: 'CT WB',
+          },
+        },
+      ],
+    },
+    ptDisplaySet: {
+      seriesMatchingRules: [
+        {
+          attribute: 'Modality',
+          constraint: {
+            equals: 'PT',
+          },
+          required: true,
+        },
+        {
+          attribute: 'SeriesDescription',
+          constraint: {
+            contains: 'Corrected',
+          },
+        },
+        {
+          weight: 2,
+          attribute: 'SeriesDescription',
+          constraint: {
+            doesNotContain: {
+              value: 'Uncorrected',
+            },
+          },
+        },
+      ],
+    },
+  },
+
   stages: [
     {
       id: 'YbmMy3b7pz7GLiaT',
