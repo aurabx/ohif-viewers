@@ -24,6 +24,7 @@ function initDefaultToolGroup(
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
       { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      { toolName: 'Link' },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -39,7 +40,7 @@ function initDefaultToolGroup(
     // enabled
     // enabled: [{ toolName: toolNames.SegmentationDisplay }],
     // disabled
-    disabled: [{ toolName: 'Link' }],
+    // disabled: [{ toolName: 'Link' }],
   };
 
   const toolsConfig = {

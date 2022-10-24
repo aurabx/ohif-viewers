@@ -132,6 +132,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
       const toolGroupId = viewportInfo.getToolGroupId();
       const syncGroups = viewportInfo.getSyncGroups();
 
+      console.log('find:viewportInfo', syncGroups);
+
       ToolGroupService.addViewportToToolGroup(
         viewportId,
         renderingEngineId,

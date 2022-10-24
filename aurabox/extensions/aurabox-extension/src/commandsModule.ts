@@ -88,26 +88,25 @@ const commandsModule = ({ servicesManager }) => {
 
       const { viewports } = ViewportGridService.getState();
 
-      const syncGroup = asSyncGroup('zoompan');
+      const syncGroup = asSyncGroup('cameraposition');
 
       console.log('find:viewports', viewports);
-
-      const cameraPositionSynchronizer = SynchronizerManager.createSynchronizer(
-        'synchronizerName',
-        coreEnums.Events.CAMERA_MODIFIED,
-        (
-          synchronizerInstance,
-          sourceViewport,
-          targetViewport,
-          cameraModifiedEvent
-        ) => {
-          // Synchronization logic should go here
-          //console.log('find:synchronizerInstance', synchronizerInstance);
-          //console.log('find:sourceViewport', sourceViewport);
-          console.log('find:targetViewport', targetViewport);
-          //console.log('find:cameraModifiedEvent', cameraModifiedEvent);
-        }
-      );
+      // const cameraPositionSynchronizer = SynchronizerManager.createSynchronizer(
+      //   'synchronizerName',
+      //   coreEnums.Events.CAMERA_MODIFIED,
+      //   (
+      //     synchronizerInstance,
+      //     sourceViewport,
+      //     targetViewport,
+      //     cameraModifiedEvent
+      //   ) => {
+      //     // Synchronization logic should go here
+      //     //console.log('find:synchronizerInstance', synchronizerInstance);
+      //     //console.log('find:sourceViewport', sourceViewport);
+      //     console.log('find:targetViewport', targetViewport);
+      //     //console.log('find:cameraModifiedEvent', cameraModifiedEvent);
+      //   }
+      // );
 
       for (const viewportKey in viewports) {
         console.log('find:viewportKey', viewportKey);
@@ -118,11 +117,13 @@ const commandsModule = ({ servicesManager }) => {
         );
 
         // console.log('find:viewportInfo', viewportInfo);
-        if (key === 0) {
-          cameraPositionSynchronizer.addSource(viewportInfo);
-        } else {
-          cameraPositionSynchronizer.addTarget(viewportInfo);
-        }
+        // if (key === 0) {
+        //   cameraPositionSynchronizer.addSource(viewportInfo);
+        // } else {
+        //   cameraPositionSynchronizer.addTarget(viewportInfo);
+        // }
+
+        //cameraPositionSynchronizer.add(viewportInfo);
 
         SyncGroupService.addViewportToSyncGroup(
           viewportInfo.viewportId,
@@ -133,25 +134,25 @@ const commandsModule = ({ servicesManager }) => {
 
       console.log('find:viewports', viewports);
 
-      const firstViewport = CornerstoneViewportService.getViewportInfoByIndex(
-        0
-      );
-
-      const firstViewportInfo = CornerstoneViewportService.getCornerstoneViewport(
-        firstViewport.getViewportId()
-      );
-
-      const secondViewport = CornerstoneViewportService.getViewportInfoByIndex(
-        1
-      );
-
-      const secondViewportInfo = CornerstoneViewportService.getCornerstoneViewport(
-        secondViewport.getViewportId()
-      );
-
-      const syncGroups = firstViewport.getSyncGroups();
-
-      console.log('find:syncGroups', syncGroups);
+      // const firstViewport = CornerstoneViewportService.getViewportInfoByIndex(
+      //   0
+      // );
+      //
+      // const firstViewportInfo = CornerstoneViewportService.getCornerstoneViewport(
+      //   firstViewport.getViewportId()
+      // );
+      //
+      // const secondViewport = CornerstoneViewportService.getViewportInfoByIndex(
+      //   1
+      // );
+      //
+      // const secondViewportInfo = CornerstoneViewportService.getCornerstoneViewport(
+      //   secondViewport.getViewportId()
+      // );
+      //
+      // const syncGroups = firstViewport.getSyncGroups();
+      //
+      // console.log('find:syncGroups', syncGroups);
       // SyncGroup
       //const viewportIndex = viewportInfo.getViewportIndex();
       //setEnabledElement(viewportIndex, element);
@@ -163,20 +164,20 @@ const commandsModule = ({ servicesManager }) => {
       // cameraPositionSynchronizer.addSource(firstViewport);
       // cameraPositionSynchronizer.addTarget(secondViewport);
 
-      cameraPositionSynchronizer.add(firstViewport);
-      cameraPositionSynchronizer.add(secondViewport);
-
-      SyncGroupService.addViewportToSyncGroup(
-        firstViewport.viewportId,
-        firstViewport.renderingEngineId,
-        [syncGroup]
-      );
-
-      SyncGroupService.addViewportToSyncGroup(
-        secondViewport.viewportId,
-        secondViewport.renderingEngineId,
-        [syncGroup]
-      );
+      // cameraPositionSynchronizer.add(firstViewport);
+      // cameraPositionSynchronizer.add(secondViewport);
+      //
+      // SyncGroupService.addViewportToSyncGroup(
+      //   firstViewport.viewportId,
+      //   firstViewport.renderingEngineId,
+      //   [syncGroup]
+      // );
+      //
+      // SyncGroupService.addViewportToSyncGroup(
+      //   secondViewport.viewportId,
+      //   secondViewport.renderingEngineId,
+      //   [syncGroup]
+      // );
 
       // const synchronizer = SynchronizerManager.getSynchronizer(
       //   cameraSynchronizerId
@@ -309,141 +310,6 @@ const commandsModule = ({ servicesManager }) => {
         return;
       }
     },
-    flipViewportHorizontal: () => {
-      const enabledElement = _getActiveViewportEnabledElement();
-
-      if (!enabledElement) {
-        return;
-      }
-
-      const { viewport } = enabledElement;
-
-      if (viewport instanceof StackViewport) {
-        const { flipHorizontal } = viewport.getCamera();
-        viewport.setCamera({ flipHorizontal: !flipHorizontal });
-        viewport.render();
-      }
-    },
-    invertViewport: ({ element }) => {
-      let enabledElement;
-
-      if (element === undefined) {
-        enabledElement = _getActiveViewportEnabledElement();
-      } else {
-        enabledElement = element;
-      }
-
-      if (!enabledElement) {
-        return;
-      }
-
-      const { viewport } = enabledElement;
-
-      if (viewport instanceof StackViewport) {
-        const { invert } = viewport.getProperties();
-        viewport.setProperties({ invert: !invert });
-        viewport.render();
-      }
-    },
-    resetViewport: () => {
-      const enabledElement = _getActiveViewportEnabledElement();
-
-      if (!enabledElement) {
-        return;
-      }
-
-      const { viewport } = enabledElement;
-
-      if (viewport instanceof StackViewport) {
-        viewport.resetProperties();
-        viewport.resetCamera();
-        viewport.render();
-      }
-    },
-    scaleViewport: ({ direction }) => {
-      const enabledElement = _getActiveViewportEnabledElement();
-      const scaleFactor = direction > 0 ? 0.9 : 1.1;
-
-      if (!enabledElement) {
-        return;
-      }
-      const { viewport } = enabledElement;
-
-      if (viewport instanceof StackViewport) {
-        if (direction) {
-          const { parallelScale } = viewport.getCamera();
-          viewport.setCamera({ parallelScale: parallelScale * scaleFactor });
-          viewport.render();
-        } else {
-          viewport.resetCamera();
-          viewport.render();
-        }
-      }
-    },
-    scroll: ({ direction }) => {
-      const enabledElement = _getActiveViewportEnabledElement();
-
-      if (!enabledElement) {
-        return;
-      }
-
-      const { viewport } = enabledElement;
-      const options = { delta: direction };
-
-      csToolsUtils.scroll(viewport, options);
-    },
-    async createSegmentationForDisplaySet({ displaySetInstanceUID }) {
-      const volumeId = displaySetInstanceUID;
-
-      const segmentationUID = csUtils.uuidv4();
-      const segmentationId = `${volumeId}::${segmentationUID}`;
-
-      await volumeLoader.createAndCacheDerivedVolume(volumeId, {
-        volumeId: segmentationId,
-      });
-
-      // Add the segmentations to state
-      segmentation.addSegmentations([
-        {
-          segmentationId,
-          representation: {
-            // The type of segmentation
-            type: Enums.SegmentationRepresentations.Labelmap,
-            // The actual segmentation data, in the case of labelmap this is a
-            // reference to the source volume of the segmentation.
-            data: {
-              volumeId: segmentationId,
-            },
-          },
-        },
-      ]);
-
-      return segmentationId;
-    },
-    async addSegmentationRepresentationToToolGroup({
-      segmentationId,
-      toolGroupId,
-      representationType,
-    }) {
-      // // Add the segmentation representation to the toolgroup
-      await segmentation.addSegmentationRepresentations(toolGroupId, [
-        {
-          segmentationId,
-          type: representationType,
-        },
-      ]);
-    },
-    getLabelmapVolumes: ({ segmentations }) => {
-      if (!segmentations || !segmentations.length) {
-        segmentations = SegmentationService.getSegmentations();
-      }
-
-      const labelmapVolumes = segmentations.map(segmentation => {
-        return cache.getVolume(segmentation.id);
-      });
-
-      return labelmapVolumes;
-    },
     incrementActiveViewport: () => {
       const { activeViewportIndex, viewports } = ViewportGridService.getState();
       const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
@@ -457,6 +323,18 @@ const commandsModule = ({ servicesManager }) => {
     },
     setHangingProtocol: ({ protocolId }) => {
       HangingProtocolService.setProtocol(protocolId);
+    },
+    scroll: ({ direction }) => {
+      const enabledElement = _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+      const options = { delta: direction };
+
+      csToolsUtils.scroll(viewport, options);
     },
   };
 
@@ -476,16 +354,7 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: [],
       options: {},
     },
-    rotateViewportCW: {
-      commandFn: actions.rotateViewport,
-      storeContexts: [],
-      options: { rotation: 90 },
-    },
-    rotateViewportCCW: {
-      commandFn: actions.rotateViewport,
-      storeContexts: [],
-      options: { rotation: -90 },
-    },
+
     incrementActiveViewport: {
       commandFn: actions.incrementActiveViewport,
       storeContexts: [],
@@ -494,41 +363,7 @@ const commandsModule = ({ servicesManager }) => {
       commandFn: actions.decrementActiveViewport,
       storeContexts: [],
     },
-    flipViewportHorizontal: {
-      commandFn: actions.flipViewportHorizontal,
-      storeContexts: [],
-      options: {},
-    },
-    flipViewportVertical: {
-      commandFn: actions.flipViewportVertical,
-      storeContexts: [],
-      options: {},
-    },
-    invertViewport: {
-      commandFn: actions.invertViewport,
-      storeContexts: [],
-      options: {},
-    },
-    resetViewport: {
-      commandFn: actions.resetViewport,
-      storeContexts: [],
-      options: {},
-    },
-    scaleUpViewport: {
-      commandFn: actions.scaleViewport,
-      storeContexts: [],
-      options: { direction: 1 },
-    },
-    scaleDownViewport: {
-      commandFn: actions.scaleViewport,
-      storeContexts: [],
-      options: { direction: -1 },
-    },
-    fitViewportToWindow: {
-      commandFn: actions.scaleViewport,
-      storeContexts: [],
-      options: { direction: 0 },
-    },
+
     nextImage: {
       commandFn: actions.scroll,
       storeContexts: [],
@@ -539,24 +374,9 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: [],
       options: { direction: -1 },
     },
-    showDownloadViewportModal: {
-      commandFn: actions.showDownloadViewportModal,
-      storeContexts: [],
-      options: {},
-    },
+
     toggleLink: {
       commandFn: actions.toggleLink,
-      storeContexts: [],
-      options: {},
-    },
-
-    createSegmentationForDisplaySet: {
-      commandFn: actions.createSegmentationForDisplaySet,
-      storeContexts: [],
-      options: {},
-    },
-    addSegmentationRepresentationToToolGroup: {
-      commandFn: actions.addSegmentationRepresentationToToolGroup,
       storeContexts: [],
       options: {},
     },

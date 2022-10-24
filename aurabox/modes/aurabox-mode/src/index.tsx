@@ -8,7 +8,11 @@ import initToolGroups from './initToolGroups.js';
 const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
 
 const aurabox = {
-  hangingProtocols: 'auraDefault',
+  hangingProtocols: [
+    'auraDefault',
+    'volume',
+    '@ohif/extension-default.hangingProtocolModule.default',
+  ],
 };
 
 const ohif = {
@@ -94,10 +98,10 @@ function modeFactory() {
 
       // Since we only have one viewport for the basic cs3d mode and it has
       // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = ToolGroupService.subscribe(
-        ToolGroupService.EVENTS.VIEWPORT_ADDED,
-        activateTool
-      ));
+      // ({ unsubscribe } = ToolGroupService.subscribe(
+      //   ToolGroupService.EVENTS.VIEWPORT_ADDED,
+      //   activateTool
+      // ));
 
       ToolBarService.init(extensionManager);
       ToolBarService.addButtons(toolbarButtons);
@@ -142,9 +146,9 @@ function modeFactory() {
     routes: [
       {
         path: 'aurabox',
-        /*init: ({ servicesManager, extensionManager }) => {
-          //defaultViewerRouteInit
-        },*/
+        // init: ({ servicesManager, extensionManager }) => {
+        //   //defaultViewerRouteInit
+        // },
         layoutTemplate: () => {
           return {
             id: ohif.layout,
@@ -179,7 +183,7 @@ function modeFactory() {
     ],
     extensions: extensionDependencies,
     // Default protocol gets self-registered by default in the init
-    hangingProtocol: aurabox.hangingProtocols,
+    hangingProtocols: aurabox.hangingProtocols,
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must
