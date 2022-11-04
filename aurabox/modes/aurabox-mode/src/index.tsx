@@ -10,8 +10,8 @@ const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
 const aurabox = {
   hangingProtocols: [
     'auraDefault',
-    'volume',
-    '@ohif/extension-default.hangingProtocolModule.default',
+    //'volume',
+    //'@ohif/extension-default.hangingProtocolModule.default',
   ],
 };
 

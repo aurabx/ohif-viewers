@@ -266,6 +266,14 @@ function ViewerViewportGrid(props) {
         viewportLabel,
       } = paneMetadata;
 
+      console.log('find:viewportOptions', viewportOptions);
+      //viewportOptions.viewportType = 'volume';
+      if (!viewportOptions) {
+        viewportOptions = {};
+      }
+
+      viewportOptions.viewportType = 'volume';
+
       const displaySetInstanceUIDsToUse = displaySetInstanceUIDs || [];
 
       // This is causing the viewport components re-render when the activeViewportIndex changes

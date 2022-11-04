@@ -55,6 +55,8 @@ const auraDefault = {
               //index: 180,
               preset: 'first', // 'first', 'last', 'middle'
             },
+            viewportType: 'volume',
+            orientation: 'sagittal',
             syncGroups: [
               {
                 type: 'cameraposition',

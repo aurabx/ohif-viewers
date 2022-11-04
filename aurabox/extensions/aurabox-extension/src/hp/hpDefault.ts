@@ -16,14 +16,14 @@ export default {
       // constraint: {
       //   greaterThan: 10,
       // },
-      // required: true,
+      required: true,
     },
   ],
   toolGroupIds: ['default'],
   imageLoadStrategy: 'default', // "default" , "interleaveTopToBottom",  "interleaveCenter"
   stages: [
     {
-      id: 'YbmMy3b7pz7GLiaT',
+      id: 'YbmMy3b7pz7GLiaTsd',
       name: 'default',
       viewportStructure: {
         layoutType: 'grid',
@@ -40,17 +40,17 @@ export default {
           //imageMatchingRules: [],
           // Matches displaysets, NOT series
           seriesMatchingRules: [
-            {
-              id: 'YbmMy3b7pz7GLiaT',
-              weight: 4,
-              attribute: 'SeriesDescription',
-              constraint: {
-                doesNotEqual: {
-                  value: 'Report',
-                },
-              },
-              required: true,
-            },
+            // {
+            //   id: 'YbmMy3b7pz7GLiaT',
+            //   weight: 4,
+            //   attribute: 'SeriesDescription',
+            //   constraint: {
+            //     doesNotEqual: {
+            //       value: 'Report',
+            //     },
+            //   },
+            //   required: true,
+            // },
           ],
           studyMatchingRules: [],
         },
@@ -59,25 +59,26 @@ export default {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            viewportType: 'stack',
+            viewportType: 'volume',
+            orientation: 'sagittal',
             initialImageOptions: {
               //index: 180,
               preset: 'first', // 'first', 'last', 'middle'
             },
-            syncGroups: [
-              {
-                type: 'cameraposition',
-                id: 'axialSync',
-                source: true,
-                target: true,
-              },
-              {
-                type: 'voi',
-                id: 'ctWLSync',
-                source: true,
-                target: true,
-              },
-            ],
+            // syncGroups: [
+            //   {
+            //     type: 'cameraposition',
+            //     id: 'axialSync',
+            //     source: true,
+            //     target: true,
+            //   },
+            //   {
+            //     type: 'voi',
+            //     id: 'ctWLSync',
+            //     source: true,
+            //     target: true,
+            //   },
+            // ],
           },
           displaySets: [
             {

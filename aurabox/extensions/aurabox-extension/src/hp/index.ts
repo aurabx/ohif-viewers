@@ -5,13 +5,17 @@ import hpShow from './hpShow';
 function getHangingProtocolModule() {
   return [
     {
-      id: hpVolume.id,
-      protocol: hpVolume,
+      id: hpDefault.id,
+      protocol: hpDefault,
     },
-    {
-      id: hpShow.id,
-      protocol: hpShow,
-    },
+    // {
+    //   id: hpVolume.id,
+    //   protocol: hpVolume,
+    // },
+    // {
+    //   id: hpShow.id,
+    //   protocol: hpShow,
+    // },
   ];
 }
 

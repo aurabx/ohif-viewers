@@ -24,6 +24,8 @@ function ViewportPane({
       const canDrop = monitor.canDrop();
       const isOver = monitor.isOver();
 
+      console.log('find:droppedItem', droppedItem);
+
       if (canDrop && isOver && onDrop) {
         onInteractionHandler();
         onDrop(droppedItem);

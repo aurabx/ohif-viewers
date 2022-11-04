@@ -5,11 +5,13 @@ import {
   cache,
   utilities as csUtils,
   Enums as coreEnums,
+  getRenderingEngine,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
   Enums,
   segmentation,
+  synchronizers,
   utilities as csToolsUtils,
   SynchronizerManager,
 } from '@cornerstonejs/tools';
@@ -91,23 +93,57 @@ const commandsModule = ({ servicesManager }) => {
       //SynchronizerManager.getSynchronizer('cameraposition');
       //const syncGroup = asSyncGroup('cameraposition');
 
+      let cameraPositionSynchronizer = SynchronizerManager.getSynchronizer(
+        'simpleSynchronizer'
+      );
+
       console.log('find:viewports', viewports);
-      // const cameraPositionSynchronizer = SynchronizerManager.createSynchronizer(
-      //   'synchronizerName',
-      //   coreEnums.Events.CAMERA_MODIFIED,
-      //   (
-      //     synchronizerInstance,
-      //     sourceViewport,
-      //     targetViewport,
-      //     cameraModifiedEvent
-      //   ) => {
-      //     // Synchronization logic should go here
-      //     //console.log('find:synchronizerInstance', synchronizerInstance);
-      //     //console.log('find:sourceViewport', sourceViewport);
-      //     console.log('find:targetViewport', targetViewport);
-      //     //console.log('find:cameraModifiedEvent', cameraModifiedEvent);
-      //   }
-      // );
+
+      if (!cameraPositionSynchronizer) {
+        cameraPositionSynchronizer = SynchronizerManager.createSynchronizer(
+          'simpleSynchronizer',
+          coreEnums.Events.CAMERA_MODIFIED,
+          (
+            synchronizerInstance,
+            sourceViewport,
+            targetViewport,
+            cameraModifiedEvent
+          ) => {
+            // Synchronization logic should go here
+            // console.log('find:synchronizerInstance', synchronizerInstance);
+            // console.log('find:sourceViewport', sourceViewport);
+            console.log('find:targetViewport', targetViewport.viewportId);
+            // console.log('find:cameraModifiedEvent', cameraModifiedEvent);
+
+            const { camera } = cameraModifiedEvent.detail;
+            const renderingEngine = getRenderingEngine(
+              targetViewport.renderingEngineId
+            );
+            if (!renderingEngine) {
+              throw new Error(
+                `No RenderingEngine for Id: ${targetViewport.renderingEngineId}`
+              );
+            }
+            const tViewport = renderingEngine.getViewport(
+              targetViewport.viewportId
+            );
+
+            console.log('find:cameraModifiedEvent', cameraModifiedEvent);
+            console.log('find:camera', camera);
+            tViewport.setCamera(camera);
+            tViewport.render();
+          }
+        );
+
+        // cameraPositionSynchronizer = synchronizers.createCameraPositionSynchronizer(
+        //   'simpleSynchronizer'
+        // );
+      }
+
+      if (!toggledState) {
+        cameraPositionSynchronizer.destroy();
+        return;
+      }
 
       for (const viewportKey in viewports) {
         console.log('find:viewportKey', viewportKey);
@@ -124,13 +160,18 @@ const commandsModule = ({ servicesManager }) => {
         //   cameraPositionSynchronizer.addTarget(viewportInfo);
         // }
 
-        //cameraPositionSynchronizer.add(viewportInfo);
+        console.log('find:viewportInfo', viewportInfo);
 
-        SyncGroupService.addViewportToSyncGroup(
-          viewportInfo.viewportId,
-          viewportInfo.renderingEngineId,
-          [syncGroup]
-        );
+        if (viewportInfo) {
+          console.log('find:viewport added');
+          cameraPositionSynchronizer.add(viewportInfo);
+        }
+
+        // SyncGroupService.addViewportToSyncGroup(
+        //   viewportInfo.viewportId,
+        //   viewportInfo.renderingEngineId,
+        //   [syncGroup]
+        // );
       }
 
       console.log('find:viewports', viewports);
