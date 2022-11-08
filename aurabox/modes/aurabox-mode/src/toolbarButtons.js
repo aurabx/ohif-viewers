@@ -70,9 +70,35 @@ const toolbarButtons = [
           commandOptions: {},
           context: 'CORNERSTONE',
         },
+        // {
+        //   commandName: 'setToolActive',
+        //   commandOptions: {
+        //     toolName: 'StackScroll',
+        //   },
+        //   context: 'CORNERSTONE',
+        // },
       ],
     },
   },
+  // Link
+  // {
+  //   id: 'StackScroll',
+  //   type: 'ohif.action',
+  //   props: {
+  //     icon: 'tool-stack-scroll',
+  //     label: 'Stack Scroll',
+  //     type: 'toggle',
+  //     commands: [
+  //       {
+  //         commandName: 'setToolActive',
+  //         commandOptions: {
+  //           toolName: 'StackScroll',
+  //         },
+  //         context: 'CORNERSTONE',
+  //       },
+  //     ],
+  //   },
+  // },
   // Measurement
   {
     id: 'MeasurementTools',

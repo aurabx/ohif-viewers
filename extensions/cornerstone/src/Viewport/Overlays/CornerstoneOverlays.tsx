@@ -46,6 +46,8 @@ function CornerstoneOverlays(props) {
     }
   }
 
+  console.log('find:viewportIndex', viewportIndex);
+
   return (
     <div>
       <ViewportImageScrollbar

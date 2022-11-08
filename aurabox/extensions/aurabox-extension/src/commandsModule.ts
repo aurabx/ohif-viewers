@@ -85,6 +85,18 @@ const commandsModule = ({ servicesManager }) => {
   }
 
   const actions = {
+    scroll: ({ direction }) => {
+      const enabledElement = _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+      const options = { delta: direction };
+
+      csToolsUtils.scroll(viewport, options);
+    },
     toggleLink({ toggledState }) {
       console.log('find:toggledState', toggledState);
 
@@ -112,8 +124,14 @@ const commandsModule = ({ servicesManager }) => {
             // Synchronization logic should go here
             // console.log('find:synchronizerInstance', synchronizerInstance);
             // console.log('find:sourceViewport', sourceViewport);
-            console.log('find:targetViewport', targetViewport.viewportId);
+            //console.log('find:targetViewport', targetViewport.viewportId);
             // console.log('find:cameraModifiedEvent', cameraModifiedEvent);
+
+            const enabledElement = _getActiveViewportEnabledElement();
+
+            console.log('find:enabledElement', enabledElement);
+
+            //const targetCurrentIndex = tViewport.getCurrentImageIdIndex();
 
             const { camera } = cameraModifiedEvent.detail;
             const renderingEngine = getRenderingEngine(
@@ -124,14 +142,27 @@ const commandsModule = ({ servicesManager }) => {
                 `No RenderingEngine for Id: ${targetViewport.renderingEngineId}`
               );
             }
+
+            const sViewport = renderingEngine.getViewport(
+              sourceViewport.viewportId
+            );
+
             const tViewport = renderingEngine.getViewport(
               targetViewport.viewportId
             );
 
-            console.log('find:cameraModifiedEvent', cameraModifiedEvent);
-            console.log('find:camera', camera);
-            tViewport.setCamera(camera);
-            tViewport.render();
+            const sourceCurrentIndex = sViewport.getCurrentImageIdIndex();
+
+            if (sourceCurrentIndex < tViewport.imageIds.length) {
+              tViewport.setImageIdIndex(sourceCurrentIndex);
+            } else {
+              tViewport.setImageIdIndex(tViewport.imageIds.length - 1);
+            }
+
+            // console.log('find:cameraModifiedEvent', cameraModifiedEvent);
+            // console.log('find:camera', camera);
+            // tViewport.setCamera(camera);
+            // tViewport.render();
           }
         );
 

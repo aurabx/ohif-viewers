@@ -24,6 +24,7 @@ class LinkTool extends BaseTool {
     const { invert } = this.configuration;
     const { viewport } = getEnabledElement(element);
     const delta = direction * (invert ? -1 : 1);
+    console.log('find:delta', delta);
     if (viewport instanceof StackViewport) {
       viewport.scroll(delta, this.configuration.debounceIfNotLoaded);
     } else if (viewport instanceof VolumeViewport) {
