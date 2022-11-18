@@ -1,8 +1,9 @@
 import * as cornerstone from '@cornerstonejs/core';
 import { volumeLoader } from '@cornerstonejs/core';
 import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
-import cornerstoneWebImageLoader from 'cornerstone-web-image-loader';
+import cornerstoneWADOImageLoader, {
+  webWorkerManager,
+} from 'cornerstone-wado-image-loader';
 import dicomParser from 'dicom-parser';
 import { errorHandler } from '@ohif/core';
 
@@ -39,39 +40,6 @@ export default function initWADOImageLoader(
   cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
   cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
 
-  // #todo adding cornerstoneWebImageLoader
-  cornerstoneWebImageLoader.external.cornerstone = cornerstone;
-
-  cornerstoneWebImageLoader.configure({
-    beforeSend: function (xhr) {
-      const headers = UserAuthenticationService.getAuthorizationHeader();
-
-      // Request:
-      // JPEG-LS Lossless (1.2.840.10008.1.2.4.80) if available, otherwise accept
-      // whatever transfer-syntax the origin server provides.
-      // For now we use image/jls and image/x-jls because some servers still use the old type
-      // http://dicom.nema.org/medical/dicom/current/output/html/part18.html
-      const xhrRequestHeaders = {
-        // To prevent Preflight requests:
-        accept: 'multipart/related; type=application/octet-stream',
-
-        // accept: 'image/jpeg; transfer-syntax=1.2.840.10008.1.2.4.51',
-        //
-        //accept: 'multipart/related; type="image/x-jls"',
-        // 'multipart/related; type="image/x-jls", multipart/related; type="image/jls"; transfer-syntax="1.2.840.10008.1.2.4.80", multipart/related; type="image/x-jls", multipart/related; type="application/octet-stream"; transfer-syntax=*',
-      };
-
-      if (headers && headers.Authorization) {
-        xhrRequestHeaders.Authorization = headers.Authorization;
-      }
-
-      return xhrRequestHeaders;
-    },
-    errorInterceptor: error => {
-      errorHandler.getHTTPErrorHandler(error);
-    },
-  });
-
   registerVolumeLoader(
     'cornerstoneStreamingImageVolume',
     cornerstoneStreamingImageVolumeLoader
@@ -86,7 +54,7 @@ export default function initWADOImageLoader(
       // we should set this flag to false.
       convertFloatPixelDataToInt: false,
     },
-    beforeSend: function (xhr) {
+    beforeSend: function(xhr) {
       const headers = UserAuthenticationService.getAuthorizationHeader();
 
       // Request:
@@ -95,12 +63,9 @@ export default function initWADOImageLoader(
       // For now we use image/jls and image/x-jls because some servers still use the old type
       // http://dicom.nema.org/medical/dicom/current/output/html/part18.html
       const xhrRequestHeaders = {
-        // To prevent Preflight requests:
-        accept: 'multipart/related; type=application/octet-stream',
-
-        // accept: 'image/jpeg; transfer-syntax=1.2.840.10008.1.2.4.51',
-        //
-        //accept: 'multipart/related; type="image/x-jls"',
+        Accept: appConfig.omitQuotationForMultipartRequest
+          ? 'multipart/related; type=application/octet-stream'
+          : 'multipart/related; type="application/octet-stream"',
         // 'multipart/related; type="image/x-jls", multipart/related; type="image/jls"; transfer-syntax="1.2.840.10008.1.2.4.80", multipart/related; type="image/x-jls", multipart/related; type="application/octet-stream"; transfer-syntax=*',
       };
 
@@ -116,4 +81,14 @@ export default function initWADOImageLoader(
   });
 
   initWebWorkers(appConfig);
+}
+
+export function destroy() {
+  // Note: we don't want to call .terminate on the webWorkerManager since
+  // that resets the config
+  const webWorkers = webWorkerManager.webWorkers;
+  for (let i = 0; i < webWorkers.length; i++) {
+    webWorkers[i].worker.terminate();
+  }
+  webWorkers.length = 0;
 }

@@ -8,8 +8,13 @@ import {
   useCine,
   useViewportGrid,
   useViewportDialog,
+  Tooltip,
+  Icon,
 } from '@ohif/ui';
 
+import { useTranslation } from 'react-i18next';
+
+import { eventTarget, Enums } from '@cornerstonejs/core';
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
 
@@ -25,6 +30,8 @@ function TrackedCornerstoneViewport(props) {
     extensionManager,
     commandsManager,
   } = props;
+
+  const { t } = useTranslation('TrackedViewport');
 
   const {
     MeasurementService,
@@ -64,6 +71,26 @@ function TrackedCornerstoneViewport(props) {
     ManufacturerModelName,
   } = displaySet.images[0];
 
+  const cineHandler = () => {
+    if (!cines || !cines[viewportIndex] || !element) {
+      return;
+    }
+
+    const cine = cines[viewportIndex];
+    const isPlaying = cine.isPlaying || false;
+    const frameRate = cine.frameRate || 24;
+
+    const validFrameRate = Math.max(frameRate, 1);
+
+    if (isPlaying) {
+      cineService.playClip(element, {
+        framesPerSecond: validFrameRate,
+      });
+    } else {
+      cineService.stopClip(element);
+    }
+  };
+
   useEffect(() => {
     if (isTracked) {
       annotation.config.style.setViewportToolStyles(viewportId, {
@@ -92,25 +119,35 @@ function TrackedCornerstoneViewport(props) {
     };
   }, [isTracked]);
 
+  // unmount cleanup
   useEffect(() => {
-    if (!cines || !cines[viewportIndex]) {
+    eventTarget.addEventListener(
+      Enums.Events.STACK_VIEWPORT_NEW_STACK,
+      cineHandler
+    );
+
+    return () => {
+      cineService.setCine({ id: viewportIndex, isPlaying: false });
+      eventTarget.removeEventListener(
+        Enums.Events.STACK_VIEWPORT_NEW_STACK,
+        cineHandler
+      );
+    };
+  }, [element]);
+
+  useEffect(() => {
+    if (!cines || !cines[viewportIndex] || !element) {
       return;
     }
 
-    const cine = cines[viewportIndex];
-    const isPlaying = (cine && cine.isPlaying) || false;
-    const frameRate = (cine && cine.frameRate) || 24;
+    cineHandler();
 
-    const validFrameRate = Math.max(frameRate, 1);
-
-    if (isPlaying) {
-      cineService.playClip(element, {
-        framesPerSecond: validFrameRate,
-      });
-    } else {
-      cineService.stopClip(element);
-    }
-  }, [cines, viewportIndex, cineService, element, displaySet]);
+    return () => {
+      if (element && cines?.[viewportIndex]?.isPlaying) {
+        cineService.stopClip(element);
+      }
+    };
+  }, [cines, viewportIndex, cineService, element, cineHandler]);
 
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
     setIsTracked(!isTracked);
@@ -164,16 +201,14 @@ function TrackedCornerstoneViewport(props) {
           evt.stopPropagation();
           evt.preventDefault();
         }}
-        onSeriesChange={direction => switchMeasurement(direction)}
+        useAltStyling={isTracked}
+        onArrowsClick={direction => switchMeasurement(direction)}
+        getStatusComponent={() => _getStatusComponent(isTracked)}
         studyData={{
           label: viewportLabel,
-          isTracked,
-          isLocked: false,
-          isRehydratable: false,
           studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
           currentSeries: SeriesNumber, // TODO - switch entire currentSeries to be UID based or actual position based
           seriesDescription: SeriesDescription,
-          modality: Modality,
           patientInformation: {
             patientName: PatientName
               ? OHIF.utils.formatPN(PatientName.Alphabetic)
@@ -291,6 +326,45 @@ function _getNextMeasurementUID(
   const newTrackedMeasurementId = uids[measurementIndex];
 
   return newTrackedMeasurementId;
+}
+
+function _getStatusComponent(isTracked) {
+  const trackedIcon = isTracked ? 'tracked' : 'dotted-circle';
+
+  return (
+    <div className="relative">
+      <Tooltip
+        position="bottom-left"
+        content={
+          <div className="flex py-2">
+            <div className="flex pt-1">
+              <Icon name="info-link" className="w-4 text-primary-main" />
+            </div>
+            <div className="flex ml-4">
+              <span className="text-base text-common-light">
+                {isTracked ? (
+                  <>
+                    Series is
+                    <span className="font-bold text-white"> tracked</span> and
+                    can be viewed <br /> in the measurement panel
+                  </>
+                ) : (
+                  <>
+                    Measurements for
+                    <span className="font-bold text-white"> untracked </span>
+                    series <br /> will not be shown in the <br /> measurements
+                    panel
+                  </>
+                )}
+              </span>
+            </div>
+          </div>
+        }
+      >
+        <Icon name={trackedIcon} className="w-6 text-primary-light" />
+      </Tooltip>
+    </div>
+  );
 }
 
 export default TrackedCornerstoneViewport;

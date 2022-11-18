@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '../';
-import * as Types from '../../Types';
+import * as Types from '../../types';
 
 const ThumbnailList = ({
   thumbnails,
@@ -154,6 +154,8 @@ function _getModalityTooltip(modality) {
 
 const _modalityTooltips = {
   SR: 'Structured Report',
+  SEG: 'Segmentation',
+  RT: 'RT Structure Set',
 };
 
 export default ThumbnailList;

@@ -8,7 +8,6 @@ import setFusionActiveVolume from './utils/setFusionActiveVolume.js';
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  hangingProtocols: '@ohif/extension-default.hangingProtocolModule.default',
   measurements: '@ohif/extension-default.panelModule.measure',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
@@ -18,7 +17,7 @@ const cs3d = {
 };
 
 const tmtv = {
-  hangingProtocols: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
+  hangingProtocol: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
   ROIThresholdPanel: '@ohif/extension-tmtv.panelModule.ROIThresholdSeg',
 };
@@ -141,6 +140,9 @@ function modeFactory({ modeConfiguration }) {
         SyncGroupService,
         MeasurementService,
         ToolBarService,
+        SegmentationService,
+        CornerstoneViewportService,
+        HangingProtocolService,
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
@@ -148,6 +150,9 @@ function modeFactory({ modeConfiguration }) {
       MeasurementService.clearMeasurements();
       ToolGroupService.destroy();
       SyncGroupService.destroy();
+      SegmentationService.destroy();
+      CornerstoneViewportService.destroy();
+      HangingProtocolService.reset();
     },
     validationTags: {
       study: [],
@@ -174,8 +179,8 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [],
-              rightPanels: [tmtv.petSUV, tmtv.ROIThresholdPanel],
+              // leftPanels: [ohif.thumbnailList],
+              rightPanels: [tmtv.ROIThresholdPanel, tmtv.petSUV],
               viewports: [
                 {
                   namespace: cs3d.viewport,
@@ -188,7 +193,7 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocols: [tmtv.hangingProtocols],
+    hangingProtocol: tmtv.hangingProtocol,
     sopClassHandlers: [ohif.sopClassHandler],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };

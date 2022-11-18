@@ -1,13 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
 
 import { ButtonGroup, Button, StudyItem, ThumbnailList } from '../';
-import { StringNumber } from '../../Types';
-
-const buttonClasses = 'text-white text-base border-none bg-black p-2 min-w-18';
-const activeButtonClasses = 'bg-primary-main';
+import { StringNumber } from '../../types';
 
 const getTrackedSeries = displaySets => {
   let trackedSeries = 0;
@@ -80,11 +76,7 @@ const StudyBrowser = ({
         className="flex flex-row items-center justify-center h-16 p-4 border-b w-100 border-secondary-light bg-primary-dark"
         data-cy={'studyBrowser-panel'}
       >
-        <ButtonGroup
-          variant="outlined"
-          color="inherit"
-          className="border rounded-md border-secondary-light"
-        >
+        <ButtonGroup variant="outlined" color="secondary" splitBorder={false}>
           {tabs.map(tab => {
             const { name, label, studies } = tab;
             const isActive = activeTabName === name;
@@ -92,11 +84,9 @@ const StudyBrowser = ({
             return (
               <Button
                 key={name}
-                className={classnames(
-                  buttonClasses,
-                  isActive && activeButtonClasses
-                )}
+                className={'text-white text-base p-2 min-w-18'}
                 size="initial"
+                bgColor={isActive ? 'bg-primary-main' : 'bg-black'}
                 onClick={() => {
                   onClickTab(name);
                 }}

@@ -2,31 +2,40 @@ import HangingProtocolServiceClass from './HangingProtocolService';
 
 const testProtocol = {
   id: 'test',
-  locked: true,
   hasUpdatedPriorsInformation: false,
   name: 'Default',
-  createdDate: '2021-02-23T19:22:08.894Z',
-  modifiedDate: '2021-02-23T19:22:08.894Z',
-  availableTo: {},
-  editableBy: {},
-  toolGroupIds: ['ctToolGroup', 'ptToolGroup'],
-  imageLoadStrategy: 'interleaveTopToBottom', // "default" , "interleaveTopToBottom",  "interleaveCenter"
   protocolMatchingRules: [
     {
-      id: 'wauZK2QNEfDPwcAQo',
-      weight: 1,
       attribute: 'StudyDescription',
       constraint: {
-        contains: {
-          value: 'PETCT',
-        },
+        contains: 'PETCT',
       },
-      required: false,
     },
   ],
+  displaySetSelectors: {
+    displaySetSelector: {
+      seriesMatchingRules: [
+        {
+          weight: 1,
+          attribute: 'Modality',
+          constraint: {
+            equals: 'CT',
+          },
+          required: true,
+        },
+        {
+          weight: 1,
+          attribute: 'numImageFrames',
+          constraint: {
+            greaterThan: 10,
+          },
+        },
+      ],
+      studyMatchingRules: [],
+    },
+  },
   stages: [
     {
-      id: 'hYbmMy3b7pz7GLiaT',
       name: 'default',
       viewportStructure: {
         layoutType: 'grid',
@@ -35,29 +44,6 @@ const testProtocol = {
           columns: 1,
         },
       },
-      displaySets: [
-        {
-          id: 'displaySet',
-          seriesMatchingRules: [
-            {
-              weight: 1,
-              attribute: 'Modality',
-              constraint: {
-                equals: 'CT',
-              },
-              required: true,
-            },
-            {
-              weight: 1,
-              attribute: 'numImageFrames',
-              constraint: {
-                greaterThan: 10,
-              },
-            },
-          ],
-          studyMatchingRules: [],
-        },
-      ],
       viewports: [
         {
           viewportOptions: {
@@ -83,7 +69,7 @@ const testProtocol = {
           },
           displaySets: [
             {
-              id: 'displaySet',
+              id: 'displaySetSelector',
             },
           ],
         },
@@ -127,7 +113,7 @@ describe('HangingProtocolService', () => {
   let initialScaling;
 
   beforeAll(() => {
-    hps.addProtocols([testProtocol]);
+    hps.addProtocol(testProtocol.id, testProtocol);
   });
 
   it('has one protocol', () => {
@@ -137,14 +123,10 @@ describe('HangingProtocolService', () => {
   describe('run', () => {
     it('matches best image match', () => {
       hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
-      const {
-        hpAlreadyApplied,
-        viewportMatchDetails,
-        displaySetMatchDetails,
-      } = hps.getMatchDetails();
-      expect(hpAlreadyApplied).toMatchObject([false]);
-      expect(viewportMatchDetails.length).toBe(1);
-      expect(viewportMatchDetails[0]).toMatchObject({
+      const { hpAlreadyApplied, viewportMatchDetails } = hps.getMatchDetails();
+      expect(hpAlreadyApplied).toMatchObject(new Map([[0, false]]));
+      expect(viewportMatchDetails.size).toBe(1);
+      expect(viewportMatchDetails.get(0)).toMatchObject({
         viewportOptions: {
           viewportId: 'ctAXIAL',
           viewportType: 'volume',
