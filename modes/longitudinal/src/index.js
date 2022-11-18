@@ -10,7 +10,7 @@ const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  hangingProtocols: '@ohif/extension-default.hangingProtocolModule.default',
+  thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
 const tracked = {
@@ -38,12 +38,20 @@ const dicompdf = {
   viewport: '@ohif/extension-dicom-pdf.viewportModule.dicom-pdf',
 };
 
+const dicomSeg = {
+  sopClassHandler:
+    '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
+  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+};
+
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-measurement-tracking': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
 };
@@ -103,6 +111,8 @@ function modeFactory() {
         'Pan',
         'Capture',
         'Layout',
+        'MPR',
+        'Crosshairs',
         'MoreTools',
       ]);
     },
@@ -112,12 +122,18 @@ function modeFactory() {
         SyncGroupService,
         MeasurementService,
         ToolBarService,
+        SegmentationService,
+        CornerstoneViewportService,
+        HangingProtocolService,
       } = servicesManager.services;
 
       ToolBarService.reset();
       MeasurementService.clearMeasurements();
       ToolGroupService.destroy();
       SyncGroupService.destroy();
+      SegmentationService.destroy();
+      CornerstoneViewportService.destroy();
+      HangingProtocolService.reset();
     },
     validationTags: {
       study: [],
@@ -143,8 +159,8 @@ function modeFactory() {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              // TODO: Should be optional, or required to pass empty array for slots?
-              rightPanels: [tracked.measurements],
+              rightPanels: [dicomSeg.panel, tracked.measurements],
+              // rightPanelDefaultClosed: true, // optional prop to start with collapse panels
               viewports: [
                 {
                   namespace: tracked.viewport,
@@ -162,6 +178,10 @@ function modeFactory() {
                   namespace: dicompdf.viewport,
                   displaySetsToDisplay: [dicompdf.sopClassHandler],
                 },
+                {
+                  namespace: dicomSeg.viewport,
+                  displaySetsToDisplay: [dicomSeg.sopClassHandler],
+                },
               ],
             },
           };
@@ -169,13 +189,15 @@ function modeFactory() {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocols: [ohif.hangingProtocols],
+    // Default protocol gets self-registered by default in the init
+    hangingProtocol: 'default',
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must
     // come first to remove video transfer syntax before ohif uses images
     sopClassHandlers: [
       dicomvideo.sopClassHandler,
+      dicomSeg.sopClassHandler,
       ohif.sopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,

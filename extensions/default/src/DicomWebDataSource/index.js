@@ -70,6 +70,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
   const wadoConfig = {
     url: wadoRoot,
+    staticWado,
     singlepart,
     headers: UserAuthenticationService.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
@@ -80,15 +81,19 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
   const qidoDicomWebClient = staticWado
     ? new StaticWadoClient(qidoConfig)
     : new api.DICOMwebClient(qidoConfig);
-  const wadoDicomWebClient = new api.DICOMwebClient(wadoConfig);
+
+  const wadoDicomWebClient = staticWado
+    ? new StaticWadoClient(wadoConfig)
+    : new api.DICOMwebClient(wadoConfig);
 
   const implementation = {
     initialize: ({ params, query }) => {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
-      const queryStudyInstanceUIDs = query.get('StudyInstanceUIDs');
+      const queryStudyInstanceUIDs = query.getAll('StudyInstanceUIDs');
 
       const StudyInstanceUIDs =
-        queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
+        queryStudyInstanceUIDs.length && queryStudyInstanceUIDs ||
+        paramsStudyInstanceUIDs;
       const StudyInstanceUIDsAsArray =
         StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
           ? StudyInstanceUIDs
@@ -418,6 +423,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
                 // any implementation that stores static copies of the metadata
                 StudyInstanceUID: naturalized.StudyInstanceUID,
               };
+              // Todo: this needs to be from wado dicom web client
               return qidoDicomWebClient.retrieveBulkData(options).then(val => {
                 const ret = (val && val[0]) || undefined;
                 value.Value = ret;
@@ -435,6 +441,9 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
 
         // Adding instanceMetadata to OHIF MetadataProvider
         naturalizedInstances.forEach((instance, index) => {
+          instance.wadoRoot = dicomWebConfig.wadoRoot;
+          instance.wadoUri = dicomWebConfig.wadoUri;
+
           const imageId = implementation.getImageIdsForInstance({
             instance,
           });
@@ -494,10 +503,10 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
         const NumberOfFrames = instance.NumberOfFrames;
 
         if (NumberOfFrames > 1) {
-          for (let i = 0; i < NumberOfFrames; i++) {
+          for (let frame = 1; frame <= NumberOfFrames; frame++) {
             const imageId = this.getImageIdsForInstance({
               instance,
-              frame: i,
+              frame,
             });
             imageIds.push(imageId);
           }
