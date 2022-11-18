@@ -1,14 +1,11 @@
 window.config = {
-  routerBasename: '/viewers/v3',
-  // routerBasename: '/',
+  //routerBasename: '/viewers/v3',
+  routerBasename: '/',
   // whiteLabelling: {},
   extensions: [],
   modes: [],
   showStudyList: true,
-  // maxNumberOfWebWorkers: 3,
-  // below flag is for performance reasons, but it might not work for all servers
-  omitQuotationForMultipartRequest: true,
-  showLoadingIndicator: true,
+  maxNumberOfWebWorkers: 3,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
@@ -17,28 +14,45 @@ window.config = {
   // filterQueryParam: false,
   dataSources: [
     {
-      friendlyName: 'dcmjs DICOMWeb Server',
+      friendlyName: 'Aurabox DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
-        name: 'aws',
-        // old server
-        // wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        // qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        // wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        // new server
-        wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
-        qidoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
-        wadoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
-        supportsReject: false,
+        name: 'Aurabox DICOMWeb',
+        wadoUriRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/wado-rs',
+        qidoRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/wado-rs',
+        wadoRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/wado-rs',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
-        supportsFuzzyMatching: false,
+        supportsFuzzyMatching: true,
+        supportsWildcard: false,
+
+        // requestOptions: {
+        //     auth: (options) => {
+        //         return 'Bearer ' + 'WHEREAMI' //token
+        //     }
+        // }
+      },
+    },
+    {
+      friendlyName: 'dcmjs DICOMWeb Server',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb1',
+      configuration: {
+        name: 'DCM4CHEE',
+        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
         supportsWildcard: true,
-        staticWado: true,
-        singlepart: 'bulkdata,video,pdf',
       },
     },
     {
@@ -56,6 +70,11 @@ window.config = {
       configuration: {},
     },
   ],
+
+  headers: {
+    Authorization: 'Bearer THING',
+  },
+
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.
     console.warn(error.status);
