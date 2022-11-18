@@ -1,14 +1,11 @@
 window.config = {
-  routerBasename: '/viewers/v3',
+  routerBasename: '/',
   // routerBasename: '/',
   // whiteLabelling: {},
   extensions: [],
   modes: [],
   showStudyList: true,
-  // maxNumberOfWebWorkers: 3,
-  // below flag is for performance reasons, but it might not work for all servers
-  omitQuotationForMultipartRequest: true,
-  showLoadingIndicator: true,
+  maxNumberOfWebWorkers: 3,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
@@ -17,28 +14,45 @@ window.config = {
   // filterQueryParam: false,
   dataSources: [
     {
-      friendlyName: 'dcmjs DICOMWeb Server',
+      friendlyName: 'Aurabox DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
-        name: 'aws',
-        // old server
-        // wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        // qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        // wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        // new server
-        wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
-        qidoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
-        wadoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
-        supportsReject: false,
+        name: 'Aurabox DICOMWeb',
+        wadoUriRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/wado-rs',
+        qidoRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/wado-rs',
+        wadoRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/wado-rs',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
-        supportsFuzzyMatching: false,
+        supportsFuzzyMatching: true,
+        supportsWildcard: false,
+
+        // requestOptions: {
+        //     auth: (options) => {
+        //         return 'Bearer ' + 'WHEREAMI' //token
+        //     }
+        // }
+      },
+    },
+    {
+      friendlyName: 'dcmjs DICOMWeb Server',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb1',
+      configuration: {
+        name: 'DCM4CHEE',
+        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
         supportsWildcard: true,
-        staticWado: true,
-        singlepart: 'bulkdata,video,pdf',
       },
     },
     {
@@ -56,6 +70,12 @@ window.config = {
       configuration: {},
     },
   ],
+
+  headers: {
+    Authorization:
+      'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1LmF1cmFib3guYXBwIiwiYXVkIjoiaHR0cHM6Ly9hdS5hdXJhYm94LmFwcCIsInN1YiI6IjExMjA3OGE5LTlmODMtNDI0NC1iY2U5LWEyZDU4NTRhZDc2NCIsInBhdGllbnQiOiI3YjNlZmNmNy05ZjlmLTQ1YzEtODI0Yy0zZGRhMzc5ODYyMjIiLCJzdG9yZV9pZCI6IjlkYTliZWM0LTE1N2QtNDg1Zi1hMjY0LTNhZWQyZTBiZjM2MiIsImlhdCI6MTY2MzczNzM3MywibmJmIjoxNjYzNzM3MzczLCJleHAiOjE2NjM4MjM3NzN9.hIJBaJwLGQr2b4Pd8ayADDE30jdXa6MgMkOx-jmYCpIvFcz798XNRexNV9QSnRqUZg9ZLlhdTAK4Pm7V0gvz5l3LozGaIgEuHTW0CDaoiSbCHumTuDk1TraVvs6LHrV-UX5-WEOnAWZJAe5ePzGcjAKzZLkcM-qLKP6H8NM3H1Fy4MPA4tOnBVbIw6Kvhy25rTdoEKtyAysrhYSf7YFZkVYNVj1Ul1yLrZ7080mkxFxSTDCyfIm9okdHE2Y8mhy3FhOAGtubXs8eG3s0qABQ-1k_gseFNu2fPuWdIOA4gCYU7vI-yP2HuSiHNLBFmGUkvDbWfCxqnQAuUOdrABGumg',
+  },
+
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.
     console.warn(error.status);
