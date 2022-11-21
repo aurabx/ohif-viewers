@@ -159,7 +159,8 @@ function modeFactory() {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [dicomSeg.panel],
+              rightPanels: [],
+              // rightPanels: [dicomSeg.panel],
               //rightPanels: [dicomSeg.panel, tracked.measurements],
               rightPanelDefaultClosed: true, // optional prop to start with collapse panels
               viewports: [
@@ -191,7 +192,8 @@ function modeFactory() {
     ],
     extensions: extensionDependencies,
     // Default protocol gets self-registered by default in the init
-    hangingProtocol: 'default',
+    // hangingProtocol: 'default',
+    hangingProtocol: 'auraDefault',
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must
