@@ -9,10 +9,30 @@ const auraDefault = {
   editableBy: {},
   protocolMatchingRules: [],
   toolGroupIds: ['default'],
-  //imageLoadStrategy: 'default', // "default" , "interleaveTopToBottom",  "interleaveCenter"
+  displaySetSelectors: {
+    defaultDisplaySetId: {
+      // Unused currently
+      imageMatchingRules: [],
+      // Matches displaysets, NOT series
+      seriesMatchingRules: [
+        {
+          id: 'YbmMy3b7pz7GLiaT',
+          weight: 4,
+          attribute: 'SeriesDescription',
+          constraint: {
+            doesNotEqual: {
+              value: 'Report',
+            },
+          },
+          required: true,
+        },
+      ],
+      studyMatchingRules: [],
+    },
+  },
   stages: [
     {
-      id: 'YbmMy3b7pz7GLiaT',
+      id: 'hYbmMy3b7pz7GLiaT',
       name: 'default',
       viewportStructure: {
         layoutType: 'grid',
@@ -21,28 +41,6 @@ const auraDefault = {
           columns: 1,
         },
       },
-      displaySets: [
-        {
-          id: 'displaySet',
-          // Unused currently
-          imageMatchingRules: [],
-          // Matches displaysets, NOT series
-          seriesMatchingRules: [
-            {
-              id: 'YbmMy3b7pz7GLiaT',
-              weight: 4,
-              attribute: 'SeriesDescription',
-              constraint: {
-                doesNotEqual: {
-                  value: 'Report',
-                },
-              },
-              required: true,
-            },
-          ],
-          studyMatchingRules: [],
-        },
-      ],
       viewports: [
         {
           viewportOptions: {
@@ -55,7 +53,7 @@ const auraDefault = {
           displaySets: [
             {
               options: [],
-              id: 'displaySet',
+              id: 'defaultDisplaySetId',
             },
           ],
         },
@@ -63,6 +61,7 @@ const auraDefault = {
       createdDate: '2021-02-23T18:32:42.850Z',
     },
   ],
+  //imageLoadStrategy: 'default', // "default" , "interleaveTopToBottom",  "interleaveCenter"
   numberOfPriorsReferenced: -1,
 };
 
