@@ -46,6 +46,7 @@ function WorkList({
   isLoadingData,
   dataSource,
   hotkeysManager,
+  dataPath,
 }) {
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
@@ -350,7 +351,8 @@ function WorkList({
             return (
               <Link
                 key={i}
-                to={`${mode.routeName}?StudyInstanceUIDs=${studyInstanceUid}`}
+                to={`${dataPath ? '../../' : ''}${mode.routeName}${dataPath ||
+                  ''}?StudyInstanceUIDs=${studyInstanceUid}`}
                 // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
@@ -500,6 +502,7 @@ const defaultFilterValues = {
   sortDirection: 'none',
   pageNumber: 1,
   resultsPerPage: 25,
+  datasourcename: '',
 };
 
 function _tryParseInt(str, defaultValue) {
@@ -531,6 +534,7 @@ function _getQueryFilterValues(query) {
     sortDirection: query.get('sortDirection'),
     pageNumber: _tryParseInt(query.get('pageNumber'), undefined),
     resultsPerPage: _tryParseInt(query.get('resultsPerPage'), undefined),
+    datasourcename: query.get('datasourcename'),
   };
 
   // Delete null/undefined keys
