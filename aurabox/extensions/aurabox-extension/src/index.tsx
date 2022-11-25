@@ -1,5 +1,7 @@
 import { id } from './id';
 import getHangingProtocolModule from './getHangingProtocolModule.js';
+import getPanelModule from './getPanelModule';
+import getStudiesForPatient from './getStudiesForPatient';
 /**
  * You can remove any of the following modules if you don't need them.
  */
@@ -27,11 +29,7 @@ export default {
    * iconName, iconLabel, label, component} object. Example of a panel module
    * is the StudyBrowserPanel that is provided by the default extension in OHIF.
    */
-  getPanelModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  getPanelModule,
   /**
    * ViewportModule should provide a list of viewports that will be available in OHIF
    * for Modes to consume and use in the viewports. Each viewport is defined by
@@ -119,4 +117,18 @@ export default {
     commandsManager,
     extensionManager,
   }) => {},
+
+  /**
+   * @param servicesManager
+   */
+  getUtilityModule({ servicesManager }) {
+    return [
+      {
+        name: 'common',
+        exports: {
+          getStudiesForPatient,
+        },
+      },
+    ];
+  },
 };

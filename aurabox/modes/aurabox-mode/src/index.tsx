@@ -21,6 +21,11 @@ const tracked = {
     '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
 };
 
+const aura = {
+  hangingProtocols: 'aurabox-extension.hangingProtocolModule.default',
+  thumbnailList: 'aurabox-extension.panelModule.seriesList',
+};
+
 const dicomsr = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
@@ -158,7 +163,9 @@ function modeFactory() {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [tracked.thumbnailList],
+              leftPanels: [aura.thumbnailList],
+              //leftPanels: [tracked.thumbnailList],
+              //leftPanels: [ohif.thumbnailList],
               rightPanels: [],
               // rightPanels: [dicomSeg.panel],
               //rightPanels: [dicomSeg.panel, tracked.measurements],
