@@ -582,17 +582,13 @@ function _createStudyBrowserTabs(
   // Iterate over each study...
   studyDisplayList.forEach(study => {
     // Find it's display sets
-    const displaySetsForStudy = displaySets.filter(
-      ds => ds.StudyInstanceUID === study.studyInstanceUid
-    );
+    const displaySetsForStudy = displaySets
+      .filter(ds => ds.StudyInstanceUID === study.studyInstanceUid)
+      .sort((a, b) => {
+        if (b.modality === 'DOC') {
+          return -1;
+        }
 
-    // Sort them
-    const sortedDisplaySetsForStudy = utils.sortBySeriesDate(
-      displaySetsForStudy
-    );
-
-    /* Sort by series number, then by series date
-      displaySetsForStudy.sort((a, b) => {
         if (a.seriesNumber !== b.seriesNumber) {
           return a.seriesNumber - b.seriesNumber;
         }
@@ -602,7 +598,11 @@ function _createStudyBrowserTabs(
 
         return seriesDateA - seriesDateB;
       });
-    */
+
+    // Sort them
+    // const sortedDisplaySetsForStudy = utils.sortBySeriesDate(
+    //   displaySetsForStudy
+    // );
 
     // Map the study to it's tab/view representation
     const tabStudy = Object.assign({}, study, {
@@ -621,9 +621,9 @@ function _createStudyBrowserTabs(
   });
 
   // Newest first
-  const _byDate = (a, b) => {
-    const dateA = Date.parse(a);
-    const dateB = Date.parse(b);
+  const _sortStudies = (a, b) => {
+    const dateA = Date.parse(a.date);
+    const dateB = Date.parse(b.date);
 
     return dateB - dateA;
   };
@@ -633,21 +633,21 @@ function _createStudyBrowserTabs(
       name: 'primary',
       label: 'Primary',
       studies: primaryStudies.sort((studyA, studyB) =>
-        _byDate(studyA.date, studyB.date)
+        _sortStudies(studyA, studyB)
       ),
     },
     {
       name: 'recent',
       label: 'Recent',
       studies: recentStudies.sort((studyA, studyB) =>
-        _byDate(studyA.date, studyB.date)
+        _sortStudies(studyA, studyB)
       ),
     },
     {
       name: 'all',
       label: 'All',
       studies: allStudies.sort((studyA, studyB) =>
-        _byDate(studyA.date, studyB.date)
+        _sortStudies(studyA, studyB)
       ),
     },
   ];
