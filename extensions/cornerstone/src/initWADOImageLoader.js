@@ -64,8 +64,8 @@ export default function initWADOImageLoader(
       // http://dicom.nema.org/medical/dicom/current/output/html/part18.html
       const xhrRequestHeaders = {
         Accept: appConfig.omitQuotationForMultipartRequest
-          ? 'multipart/related; type=application/octet-stream'
-          : 'multipart/related; type="application/octet-stream"',
+          ? 'multipart/related; type=application/octet-stream; transfer-syntax=*'
+          : 'multipart/related; type="application/octet-stream"; transfer-syntax=*',
         // 'multipart/related; type="image/x-jls", multipart/related; type="image/jls"; transfer-syntax="1.2.840.10008.1.2.4.80", multipart/related; type="image/x-jls", multipart/related; type="application/octet-stream"; transfer-syntax=*',
       };
 
