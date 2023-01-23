@@ -8,6 +8,7 @@ const auraDefault = {
   availableTo: {},
   editableBy: {},
   protocolMatchingRules: [],
+  imageLoadStrategy: 'nth',
   toolGroupIds: ['default'],
   displaySetSelectors: {
     defaultDisplaySetId: {
@@ -22,6 +23,17 @@ const auraDefault = {
           constraint: {
             doesNotEqual: {
               value: 'Report',
+            },
+          },
+          required: true,
+        },
+        {
+          id: 'YbmMy3b7pz7GLzaT',
+          weight: 4,
+          attribute: 'Modality',
+          constraint: {
+            doesNotEqual: {
+              value: 'DOC',
             },
           },
           required: true,
