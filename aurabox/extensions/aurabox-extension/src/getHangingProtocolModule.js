@@ -8,7 +8,7 @@ const auraDefault = {
   availableTo: {},
   editableBy: {},
   protocolMatchingRules: [],
-  imageLoadStrategy: 'nth',
+  imageLoadStrategy: 'nth', // interleaveTopToBottom | interleaveCenter | nth
   toolGroupIds: ['default'],
   displaySetSelectors: {
     defaultDisplaySetId: {
