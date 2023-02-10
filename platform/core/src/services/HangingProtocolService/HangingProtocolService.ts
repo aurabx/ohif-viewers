@@ -16,9 +16,17 @@ const EVENTS = {
     'event::hanging_protocol_applied_for_viewport',
 };
 
-type Protocol = HangingProtocol.Protocol;
+type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
 
 class HangingProtocolService {
+  public static REGISTRATION = {
+    name: 'hangingProtocolService',
+    altName: 'HangingProtocolService',
+    create: ({ configuration = {}, commandsManager, servicesManager }) => {
+      return new HangingProtocolService(commandsManager, servicesManager);
+    },
+  };
+
   studies: StudyMetadata[];
   // stores all the protocols (object or function that returns an object) in a map
   protocols: Map<string, Protocol>;
@@ -180,7 +188,21 @@ class HangingProtocolService {
   public getProtocolById(id: string): HangingProtocol.Protocol {
     const protocol = this.protocols.get(id);
 
-    return protocol;
+    if (protocol instanceof Function) {
+      try {
+        const { protocol: generatedProtocol } = this._getProtocolFromGenerator(
+          protocol
+        );
+
+        return generatedProtocol;
+      } catch (error) {
+        console.warn(
+          `Error while executing protocol generator for protocol ${id}: ${error}`
+        );
+      }
+    } else {
+      return this._validateProtocol(protocol);
+    }
   }
 
   /**
@@ -432,6 +454,23 @@ class HangingProtocolService {
     });
 
     return protocol;
+  }
+
+  private _getProtocolFromGenerator(
+    protocolGenerator: HangingProtocol.ProtocolGenerator
+  ): {
+    protocol: HangingProtocol.Protocol;
+  } {
+    const { protocol } = protocolGenerator({
+      servicesManager: this._servicesManager,
+      commandsManager: this._commandsManager,
+    });
+
+    const validatedProtocol = this._validateProtocol(protocol);
+
+    return {
+      protocol: validatedProtocol,
+    };
   }
 
   getViewportsRequireUpdate(viewportIndex, displaySetInstanceUID) {
