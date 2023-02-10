@@ -2,9 +2,9 @@ import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import { utils, classes } from '@ohif/core';
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
-import { adapters } from 'dcmjs';
+import { adaptersSR } from '@cornerstonejs/adapters';
 
-const { CodeScheme: Cornerstone3DCodeScheme } = adapters.Cornerstone3D;
+const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
 
 const { ImageSet, MetadataProvider: metadataProvider } = classes;
 // TODO ->
@@ -597,7 +597,7 @@ function _getLabelFromMeasuredValueSequence(
   const { CodeValue } = MeasurementUnitsCodeSequence;
 
   const formatedNumericValue = NumericValue
-    ? Number(NumericValue).toFixed(1)
+    ? Number(NumericValue).toFixed(2)
     : '';
 
   return {
