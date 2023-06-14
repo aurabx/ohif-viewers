@@ -69,6 +69,16 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
+        path.resolve(
+          __dirname,
+          'aurabox/extensions/aurabox-extension/node_modules'
+        ),
+
+        path.resolve(__dirname, 'aurabox/modes/aurabox-mode/node_modules'),
+        path.resolve(
+          __dirname,
+          'aurabox/extensions/aurabox-extension/node_modules'
+        ),
       ],
     },
     plugins: [

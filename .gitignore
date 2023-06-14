@@ -45,3 +45,4 @@ platform/viewer/.recipes/OpenResty-Orthanc/logs/*
 
 platform/viewer/public/config/local.js
 
+platform/app/public/config/local.js

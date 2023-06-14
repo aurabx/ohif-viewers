@@ -80,7 +80,7 @@ const auraDefault = {
 function getHangingProtocolModule() {
   return [
     {
-      id: auraDefault.id,
+      name: auraDefault.id,
       protocol: auraDefault,
     },
   ];

@@ -2,10 +2,11 @@ import { id } from './id';
 import getHangingProtocolModule from './getHangingProtocolModule.js';
 import getPanelModule from './getPanelModule';
 import getStudiesForPatient from './getStudiesForPatient';
+import { Types } from '@ohif/core/src';
 /**
  * You can remove any of the following modules if you don't need them.
  */
-export default {
+const auraboxExtension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    * You ID can be anything you want, but it should be unique.
@@ -132,3 +133,5 @@ export default {
     ];
   },
 };
+
+export default auraboxExtension;
