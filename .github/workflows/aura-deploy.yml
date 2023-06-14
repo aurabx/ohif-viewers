@@ -2,7 +2,13 @@ name: Aurabox deploy
 
 on: [pull_request, push]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
+
   build-deploy:
     runs-on: ubuntu-latest
     steps:
