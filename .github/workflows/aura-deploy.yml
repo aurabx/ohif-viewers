@@ -1,5 +1,7 @@
 name: Aurabox deploy
+
 on: [pull_request, push]
+
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
