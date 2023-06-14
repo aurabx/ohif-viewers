@@ -1,5 +1,5 @@
 import toolbarButtons from './toolbarButtons.js';
-import { hotkeys, ServicesManager } from '@ohif/core';
+import { hotkeys } from '@ohif/core';
 import { id } from './id';
 
 const configs = {
@@ -10,7 +10,6 @@ const configs = {
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   measurements: '@ohif/extension-default.panelModule.measure',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
@@ -47,13 +46,13 @@ const extensionDependencies = {
 function modeFactory({ modeConfiguration }) {
   return {
     id,
-    routeName: 'viewer',
-    displayName: 'Basic Viewer CS3D',
+    routeName: 'dev',
+    displayName: 'Basic Dev Viewer',
     /**
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager }) => {
-      const { toolbarService, ToolGroupService } = servicesManager.services;
+      const { toolbarService, toolGroupService } = servicesManager.services;
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
       );
@@ -81,15 +80,17 @@ function modeFactory({ modeConfiguration }) {
           { toolName: toolNames.Bidirectional },
           { toolName: toolNames.Probe },
           { toolName: toolNames.EllipticalROI },
+          { toolName: toolNames.CircleROI },
           { toolName: toolNames.RectangleROI },
           { toolName: toolNames.StackScroll },
+          { toolName: toolNames.CalibrationLine },
         ],
         // enabled
         // disabled
       };
 
       const toolGroupId = 'default';
-      ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, configs);
+      toolGroupService.createToolGroupAndAddTools(toolGroupId, tools, configs);
 
       let unsubscribe;
 
@@ -116,8 +117,8 @@ function modeFactory({ modeConfiguration }) {
 
       // Since we only have one viewport for the basic cs3d mode and it has
       // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = ToolGroupService.subscribe(
-        ToolGroupService.EVENTS.VIEWPORT_ADDED,
+      ({ unsubscribe } = toolGroupService.subscribe(
+        toolGroupService.EVENTS.VIEWPORT_ADDED,
         activateTool
       ));
 
@@ -134,13 +135,12 @@ function modeFactory({ modeConfiguration }) {
     },
     onModeExit: ({ servicesManager }) => {
       const {
-        ToolGroupService,
-        MeasurementService,
+        toolGroupService,
+        measurementService,
         toolbarService,
       } = servicesManager.services;
 
-      toolbarService.reset();
-      ToolGroupService.destroy();
+      toolGroupService.destroy();
     },
     validationTags: {
       study: [],
@@ -185,7 +185,7 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocol: [ohif.hangingProtocol],
+    hangingProtocol: 'default',
     sopClassHandlers: [
       dicomvideo.sopClassHandler,
       ohif.sopClassHandler,

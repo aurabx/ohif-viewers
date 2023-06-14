@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { NavBar, Svg, Icon, IconButton, Dropdown } from '../';
+
+import NavBar from '../NavBar';
+import Svg from '../Svg';
+import Icon from '../Icon';
+import IconButton from '../IconButton';
+import Dropdown from '../Dropdown';
 
 function Header({
   children,
@@ -11,19 +16,16 @@ function Header({
   onClickReturnButton,
   isSticky,
   WhiteLabeling,
-}) {
+  ...props
+}): ReactNode {
   const { t } = useTranslation('Header');
-  //test
+
   // TODO: this should be passed in as a prop instead and the react-router-dom
   // dependency should be dropped
   const onClickReturn = () => {
     if (isReturnEnabled && onClickReturnButton) {
       onClickReturnButton();
     }
-  };
-
-  const CustomLogo = React => {
-    return WhiteLabeling.createLogoComponentFn(React);
   };
 
   return (
@@ -46,9 +48,9 @@ function Header({
               <Icon name="chevron-left" className="w-8 text-primary-active" />
             )}
             <div className="ml-4">
-              <div className="ml-4">
-                {WhiteLabeling ? CustomLogo(React) : <Svg name="logo-ohif" />}
-              </div>
+              {WhiteLabeling?.createLogoComponentFn?.(React, props) || (
+                <Svg name="logo-ohif" />
+              )}
             </div>
           </div>
         </div>
@@ -95,7 +97,7 @@ Header.propTypes = {
   isReturnEnabled: PropTypes.bool,
   isSticky: PropTypes.bool,
   onClickReturnButton: PropTypes.func,
-  WhiteLabeling: PropTypes.element,
+  WhiteLabeling: PropTypes.object,
 };
 
 Header.defaultProps = {

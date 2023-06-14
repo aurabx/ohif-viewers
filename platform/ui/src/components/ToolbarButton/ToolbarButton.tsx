@@ -2,7 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { IconButton, Icon, Tooltip } from '../';
+import IconButton from '../IconButton';
+import Icon from '../Icon';
+import Tooltip from '../Tooltip';
 
 const ToolbarButton = ({
   type = 'tool',
@@ -24,13 +26,13 @@ const ToolbarButton = ({
   const classes = {
     tool: isActive
       ? 'text-black'
-      : 'text-common-bright hover:bg-primary-dark hover:text-primary-light',
+      : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
     toggle: isActive
-      ? 'text-[#348CFD]'
-      : 'text-common-bright hover:bg-primary-dark hover:text-primary-light',
+      ? '!text-[#348CFD]'
+      : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
     action: isActive
       ? 'text-black'
-      : 'text-common-bright hover:bg-primary-dark hover:text-primary-light',
+      : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
   };
 
   const bgClasses = {
@@ -39,6 +41,11 @@ const ToolbarButton = ({
 
   const activeClass = isActive ? 'active' : '';
   const shouldShowDropdown = !!isActive && !!dropdownContent;
+  const iconEl = icon ? (
+    <Icon name={icon} />
+  ) : (
+    <div>{label || 'Missing icon and label'}</div>
+  );
 
   return (
     <div key={id}>
@@ -64,7 +71,7 @@ const ToolbarButton = ({
           id={id}
           {...rest}
         >
-          <Icon name={icon} />
+          {iconEl}
         </IconButton>
       </Tooltip>
     </div>

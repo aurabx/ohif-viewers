@@ -15,7 +15,7 @@ function CornerstoneViewportOverlay({
   servicesManager,
 }) {
   const {
-    CornerstoneViewportService,
+    cornerstoneViewportService,
     toolbarService,
   } = servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
@@ -86,7 +86,7 @@ function CornerstoneViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
+        const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
           viewportIndex
         );
 
@@ -129,7 +129,7 @@ function CornerstoneViewportOverlay({
       }
 
       return (
-        <div className="flex flex-row">
+        <div className="flex flex-row text-base">
           <span className="mr-1">W:</span>
           <span className="ml-1 mr-2 font-light">{windowWidth.toFixed(0)}</span>
           <span className="mr-1">L:</span>
@@ -140,7 +140,7 @@ function CornerstoneViewportOverlay({
 
     if (activeTools.includes('Zoom')) {
       return (
-        <div className="flex flex-row">
+        <div className="flex flex-row text-base">
           <span className="mr-1">Zoom:</span>
           <span className="font-light">{scale.toFixed(2)}x</span>
         </div>
@@ -169,12 +169,12 @@ function CornerstoneViewportOverlay({
         viewportData,
         imageIndex,
         viewportIndex,
-        CornerstoneViewportService
+        cornerstoneViewportService
       );
     }
 
     return (
-      <div className="flex flex-row">
+      <div className="flex flex-row text-base">
         <span className="mr-1">I:</span>
         <span className="font-light">
           {instanceNumber !== undefined
@@ -189,7 +189,7 @@ function CornerstoneViewportOverlay({
     return null;
   }
 
-  const ohifViewport = CornerstoneViewportService.getViewportInfoByIndex(
+  const ohifViewport = cornerstoneViewportService.getViewportInfoByIndex(
     viewportIndex
   );
 
@@ -241,7 +241,7 @@ function _getInstanceNumberFromVolume(
   viewportData,
   imageIndex,
   viewportIndex,
-  CornerstoneViewportService
+  cornerstoneViewportService
 ) {
   const volumes = viewportData.volumes;
 
@@ -253,7 +253,7 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
+  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
     viewportIndex
   );
 
@@ -288,7 +288,7 @@ CornerstoneViewportOverlay.propTypes = {
   viewportData: PropTypes.object,
   imageIndex: PropTypes.number,
   viewportIndex: PropTypes.number,
-  servicesManager: ServicesManager,
+  servicesManager: PropTypes.instanceOf(ServicesManager),
 };
 
 export default CornerstoneViewportOverlay;

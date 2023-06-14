@@ -1,8 +1,10 @@
 import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { Icon, Tooltip } from '../';
 import { useTranslation } from 'react-i18next';
+
+import Icon from '../Icon';
+import Tooltip from '../Tooltip';
 
 const classes = {
   infoHeader: 'text-base text-primary-light',
@@ -119,16 +121,10 @@ function PatientInfo({
           )
         }
       >
-        <div className="relative flex justify-end cursor-pointer">
-          <div className="relative">
-            <Icon name="profile" className="w-5 text-white" />
-            <Icon
-              name="info-link"
-              className="absolute w-5 text-white bg-black"
-              style={{ right: -7, bottom: -10 }}
-            />
-          </div>
-        </div>
+        <Icon
+          className="cursor-pointer text-white hover:text-primary-light"
+          name="info-action"
+        />
       </Tooltip>
     </div>
   );

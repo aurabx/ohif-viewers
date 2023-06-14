@@ -1,6 +1,6 @@
 function initDefaultToolGroup(
   extensionManager,
-  ToolGroupService,
+  toolGroupService,
   commandsManager,
   toolGroupId
 ) {
@@ -32,6 +32,7 @@ function initDefaultToolGroup(
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
       { toolName: toolNames.EllipticalROI },
+      { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
@@ -60,10 +61,10 @@ function initDefaultToolGroup(
     },
   };
 
-  ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, toolsConfig);
+  toolGroupService.createToolGroupAndAddTools(toolGroupId, tools, toolsConfig);
 }
 
-function initSRToolGroup(extensionManager, ToolGroupService, commandsManager) {
+function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
   const SRUtilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
   );
@@ -110,6 +111,7 @@ function initSRToolGroup(extensionManager, ToolGroupService, commandsManager) {
       { toolName: SRToolNames.SRArrowAnnotate },
       { toolName: SRToolNames.SRBidirectional },
       { toolName: SRToolNames.SREllipticalROI },
+      { toolName: SRToolNames.SRCircleROI },
     ],
     enabled: [
       {
@@ -138,10 +140,10 @@ function initSRToolGroup(extensionManager, ToolGroupService, commandsManager) {
   };
 
   const toolGroupId = 'SRToolGroup';
-  ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, toolsConfig);
+  toolGroupService.createToolGroupAndAddTools(toolGroupId, tools, toolsConfig);
 }
 
-function initMPRToolGroup(extensionManager, ToolGroupService, commandsManager) {
+function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
@@ -170,6 +172,7 @@ function initMPRToolGroup(extensionManager, ToolGroupService, commandsManager) {
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
       { toolName: toolNames.EllipticalROI },
+      { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
@@ -208,18 +211,18 @@ function initMPRToolGroup(extensionManager, ToolGroupService, commandsManager) {
     },
   };
 
-  ToolGroupService.createToolGroupAndAddTools('mpr', tools, toolsConfig);
+  toolGroupService.createToolGroupAndAddTools('mpr', tools, toolsConfig);
 }
 
-function initToolGroups(extensionManager, ToolGroupService, commandsManager) {
+function initToolGroups(extensionManager, toolGroupService, commandsManager) {
   initDefaultToolGroup(
     extensionManager,
-    ToolGroupService,
+    toolGroupService,
     commandsManager,
     'default'
   );
-  initSRToolGroup(extensionManager, ToolGroupService, commandsManager);
-  initMPRToolGroup(extensionManager, ToolGroupService, commandsManager);
+  initSRToolGroup(extensionManager, toolGroupService, commandsManager);
+  initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
 }
 
 export default initToolGroups;
