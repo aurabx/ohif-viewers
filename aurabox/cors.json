@@ -4,7 +4,8 @@
     "method": ["GET", "HEAD"],
     "responseHeader": [
       "Content-Type",
-      "Cross-Origin-Resource-Policy"
+      "Cross-Origin-Resource-Policy",
+      "Authorization", "Content-Range", "Accept", "Content-Type", "Origin", "Range"
     ],
     "maxAgeSeconds": 3600
   }
