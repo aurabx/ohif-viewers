@@ -51,6 +51,7 @@ jobs:
         run: |
           MERGE_CONFIG="mergedConfig.output.filename = isProdBuild ? '[name].main.js' : '[name].js'; mergedConfig.output.chunkFilename = isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js';"
           sed -e "s/return mergedConfig;/${MERGE_CONFIG}/" webpack.pwa.js | tee webpack.pwa.js
+          sed -e "s/publicPath: PUBLIC_URL/publicPath: 'auto'/" webpack.pwa.js | tee webpack.pwa.js
 
       - name: Build 🏗️
         run: yarn build
@@ -67,13 +68,13 @@ jobs:
       - name: Archive build
         uses: thedoctor0/zip-release@0.7.1
         with:
-          directory: 'platform/app/dist'
+          directory: platform/app/dist
           type: 'zip'
-          filename: 'release.zip'
+          filename: release.zip
           exclusions: '*.git* /*node_modules/* .editorconfig'
 
-      - name: Upload Release
+      - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: build
-          path: release.zip
+          path: platform/app/dist/release.zip
