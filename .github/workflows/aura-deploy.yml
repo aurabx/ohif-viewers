@@ -16,17 +16,17 @@ jobs:
       - name: 'Checkout'
         uses: 'actions/checkout@v3'
 
-#      - name: 'Google auth'
-#        id: 'auth'
-#        uses: 'google-github-actions/auth@v1'
-#        with:
-#          workload_identity_provider: 'projects/818379691618/locations/global/workloadIdentityPools/aura-dev-github-actions-id-pool/providers/aura-github-dev-provider'
-#          service_account: 'aura-dev-github-actions@symbolic-fire-321702.iam.gserviceaccount.com'
-#
-#      - name: 'Set up Cloud SDK'
-#        uses: 'google-github-actions/setup-gcloud@v1'
-#        with:
-#          project_id: 'symbolic-fire-321702'
+      - name: 'Google auth'
+        id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: 'projects/818379691618/locations/global/workloadIdentityPools/aura-dev-github-actions-id-pool/providers/aura-github-dev-provider'
+          service_account: 'aura-dev-github-actions@symbolic-fire-321702.iam.gserviceaccount.com'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+        with:
+          project_id: 'symbolic-fire-321702'
 
       - name: Set Node.js 18.x
         uses: actions/setup-node@v3
@@ -58,12 +58,12 @@ jobs:
         env:
           NODE_ENV: production
 
-#      - name: 'Push to storage'
-#        uses: google-github-actions/upload-cloud-storage@v1
-#        with:
-#          path: platform/app/dist
-#          destination: aura-au-dev-assets/viewer/v3
-#          parent: false
+      - name: 'Push to storage'
+        uses: google-github-actions/upload-cloud-storage@v1
+        with:
+          path: platform/app/dist
+          destination: aura-au-dev-assets/viewers/v3
+          parent: false
 
       - name: Archive build
         uses: thedoctor0/zip-release@0.7.1
