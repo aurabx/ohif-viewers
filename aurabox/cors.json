@@ -1,0 +1,26 @@
+[
+  {
+    "origin": ["https://aura.lndo.site"],
+    "method": ["GET"],
+    "responseHeader": ["Content-Type"],
+    "maxAgeSeconds": 3600
+  },
+  {
+    "origin": ["*pghszvpk65pns.au.platformsh.site"],
+    "method": ["GET"],
+    "responseHeader": ["Content-Type"],
+    "maxAgeSeconds": 3600
+  },
+  {
+    "origin": ["*au.aurabox.app"],
+    "method": ["GET"],
+    "responseHeader": ["Content-Type"],
+    "maxAgeSeconds": 3600
+  },
+  {
+    "origin": ["*.aurabox.app"],
+    "method": ["GET"],
+    "responseHeader": ["Content-Type"],
+    "maxAgeSeconds": 3600
+  }
+]
