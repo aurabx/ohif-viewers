@@ -60,10 +60,10 @@ jobs:
       - name: Show
         run: |
           ls -la ./platform
-          ls -la platform/viewer/dist
+          ls -la platform/app/dist
 
-#      - name: 'Push to storage'
-#        uses: 'google-github-actions/upload-cloud-storage@v1'
-#        with:
-#          path: '/platform/viewer/dist'
-#          destination: 'bucket-name/file'
+      - name: 'Push to storage'
+        uses: google-github-actions/upload-cloud-storage@v1
+        with:
+          path: platform/app/dist
+          destination: 'aura-au-dev-assets/viewer'
