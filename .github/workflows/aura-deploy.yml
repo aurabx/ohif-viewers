@@ -41,6 +41,11 @@ jobs:
           mv platform/app/.env platform/app/.env.mainline
           mv platform/app/.env.aura platform/app/.env
 
+      - name: Enable extensions
+        run: |
+          yarn cli link-extension aurabox/extensions/aurabox-extension
+          yarn cli link-mode aurabox/modes/aurabox-mode
+
       - name: Build 🏗️
         run: yarn build
         env:

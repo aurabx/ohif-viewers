@@ -79,6 +79,10 @@ module.exports = (env, argv) => {
           __dirname,
           'aurabox/extensions/aurabox-extension/node_modules'
         ),
+        path.resolve(
+          __dirname,
+          'aurabox/extensions/aurabox-extension/node_modules'
+        ),
       ],
     },
     plugins: [
