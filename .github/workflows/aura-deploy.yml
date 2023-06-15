@@ -59,7 +59,7 @@ jobs:
 
       - name: Show
         run: |
-          ls -la platform/viewer
+          ls -la ./platform
           ls -la platform/viewer/dist
 
 #      - name: 'Push to storage'
