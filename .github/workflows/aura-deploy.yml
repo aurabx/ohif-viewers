@@ -26,3 +26,28 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v1'
         with:
           project_id: 'symbolic-fire-321702'
+
+      - name: Set Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies 📦
+        run: yarn install
+
+      - name: Build 🏗️
+        run: yarn install
+
+      - name: Move envs
+        run: |
+          mv platform/app/.env platform/app/.env.mainline
+          mv platform/app/.env.aura platform/app/.env
+
+      - name: Show
+        run: ls -la platform/viewer/dist
+
+#      - name: 'Push to storage'
+#        uses: 'google-github-actions/upload-cloud-storage@v1'
+#        with:
+#          path: '/path/to/file'
+#          destination: 'bucket-name/file'

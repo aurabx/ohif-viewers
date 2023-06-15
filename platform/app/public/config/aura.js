@@ -4,11 +4,19 @@ window.config = {
   // whiteLabelling: {},
   extensions: [],
   modes: [],
+  customizationService: {
+    // Shows a custom route -access via http://localhost:3000/custom
+    // helloPage: '@ohif/extension-default.customizationModule.helloPage',
+  },
   showStudyList: true,
   // maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers
   omitQuotationForMultipartRequest: true,
   showLoadingIndicator: true,
+  showWarningMessageForCrossOrigin: true,
+  showCPUFallbackMessage: true,
+  strictZSpacingForVolumeViewport: true,
+
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
