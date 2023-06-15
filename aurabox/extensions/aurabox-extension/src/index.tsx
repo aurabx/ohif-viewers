@@ -19,11 +19,11 @@ const auraboxExtension: Types.Extensions.Extension = {
    * (e.g. cornerstone, cornerstoneTools, ...) or registering any services that
    * this extension is providing.
    */
-  preRegistration: ({
-    servicesManager,
-    commandsManager,
-    configuration = {},
-  }) => {},
+  // preRegistration: ({
+  //   servicesManager,
+  //   commandsManager,
+  //   configuration = {},
+  // }) => {},
   /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,
@@ -37,22 +37,22 @@ const auraboxExtension: Types.Extensions.Extension = {
    * {name, component} object. Example of a viewport module is the CornerstoneViewport
    * that is provided by the Cornerstone extension in OHIF.
    */
-  getViewportModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  // getViewportModule: ({
+  //   servicesManager,
+  //   commandsManager,
+  //   extensionManager,
+  // }) => {},
   /**
    * ToolbarModule should provide a list of tool buttons that will be available in OHIF
    * for Modes to consume and use in the toolbar. Each tool button is defined by
    * {name, defaultComponent, clickHandler }. Examples include radioGroupIcons and
    * splitButton toolButton that the default extension is providing.
    */
-  getToolbarModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  // getToolbarModule: ({
+  //   servicesManager,
+  //   commandsManager,
+  //   extensionManager,
+  // }) => {},
   /**
    * LayoutTemplateMOdule should provide a list of layout templates that will be
    * available in OHIF for Modes to consume and use to layout the viewer.
@@ -61,22 +61,22 @@ const auraboxExtension: Types.Extensions.Extension = {
    * a Header, left and right sidebars, and a viewport section in the middle
    * of the viewer.
    */
-  getLayoutTemplateModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  // getLayoutTemplateModule: ({
+  //   servicesManager,
+  //   commandsManager,
+  //   extensionManager,
+  // }) => {},
   /**
    * SopClassHandlerModule should provide a list of sop class handlers that will be
    * available in OHIF for Modes to consume and use to create displaySets from Series.
    * Each sop class handler is defined by a { name, sopClassUids, getDisplaySetsFromSeries}.
    * Examples include the default sop class handler provided by the default extension
    */
-  getSopClassHandlerModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  // getSopClassHandlerModule: ({
+  //   servicesManager,
+  //   commandsManager,
+  //   extensionManager,
+  // }) => {},
   /**
    * HangingProtocolModule should provide a list of hanging protocols that will be
    * available in OHIF for Modes to use to decide on the structure of the viewports
@@ -92,32 +92,32 @@ const auraboxExtension: Types.Extensions.Extension = {
    * object of functions, definitions is an object of available commands, their
    * options, and defaultContext is the default context for the command to run against.
    */
-  getCommandsModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  // getCommandsModule: ({
+  //   servicesManager,
+  //   commandsManager,
+  //   extensionManager,
+  // }) => {},
   /**
    * ContextModule should provide a list of context that will be available in OHIF
    * and will be provided to the Modes. A context is a state that is shared OHIF.
    * Context is defined by an object of { name, context, provider }. Examples include
    * the measurementTracking context provided by the measurementTracking extension.
    */
-  getContextModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  // getContextModule: ({
+  //   servicesManager,
+  //   commandsManager,
+  //   extensionManager,
+  // }) => {},
   /**
    * DataSourceModule should provide a list of data sources to be used in OHIF.
    * DataSources can be used to map the external data formats to the OHIF's
    * native format. DataSources are defined by an object of { name, type, createDataSource }.
    */
-  getDataSourcesModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  // getDataSourcesModule: ({
+  //   servicesManager,
+  //   commandsManager,
+  //   extensionManager,
+  // }) => {},
 
   /**
    * @param servicesManager

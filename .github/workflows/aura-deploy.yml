@@ -10,7 +10,7 @@ permissions:
 jobs:
 
   build-deploy:
-    name: Build and deploy
+    name: Build and create artifact
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
