@@ -1,6 +1,8 @@
 /**
  * Entry point for development and production PWA builds.
  */
+window.__webpack_public_path__ = window.PUBLIC_URL;
+
 import 'regenerator-runtime/runtime';
 import App from './App';
 import React from 'react';
