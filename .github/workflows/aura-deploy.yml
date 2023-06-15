@@ -66,4 +66,5 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v1
         with:
           path: platform/app/dist
-          destination: 'aura-au-dev-assets/viewer'
+          destination: aura-au-dev-assets/viewer
+          parent: false
