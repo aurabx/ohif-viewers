@@ -10,6 +10,7 @@ permissions:
 jobs:
 
   build-deploy:
+    name: Build and deploy
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
@@ -44,16 +45,22 @@ jobs:
       - name: Enable extensions
         run: |
           yarn cli link-extension aurabox/extensions/aurabox-extension
-          yarn cli link-mode aurabox/modes/aurabox-mode
+          yarn cli link-mode aurabox/modes/aurabox-mode      
+
+      - name: Update config
+        run: |
+          MERGE_CONFIG="mergedConfig.output.filename = isProdBuild ? '[name].main.js' : '[name].js'; mergedConfig.output.chunkFilename = isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js';"
+          sed -e "s/return mergedConfig;/${MERGE_CONFIG}/" webpack.pwa.js | tee webpack.pwa.js
 
       - name: Build 🏗️
         run: yarn build
         env:
           NODE_ENV: production
 
-
       - name: Show
-        run: ls -la platform/viewer/dist
+        run: |
+          ls -la
+          ls -la platform/viewer/dist
 
 #      - name: 'Push to storage'
 #        uses: 'google-github-actions/upload-cloud-storage@v1'

@@ -75,14 +75,6 @@ module.exports = (env, argv) => {
         ),
 
         path.resolve(__dirname, 'aurabox/modes/aurabox-mode/node_modules'),
-        path.resolve(
-          __dirname,
-          'aurabox/extensions/aurabox-extension/node_modules'
-        ),
-        path.resolve(
-          __dirname,
-          'aurabox/extensions/aurabox-extension/node_modules'
-        ),
       ],
     },
     plugins: [
@@ -203,6 +195,11 @@ module.exports = (env, argv) => {
   } else {
     mergedConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
   }
+
+  mergedConfig.output.filename = isProdBuild ? '[name].main.js' : '[name].js';
+  mergedConfig.output.chunkFilename = isProdBuild
+    ? '[name].bundle.[chunkhash].js'
+    : '[name].js';
 
   return mergedConfig;
 };
