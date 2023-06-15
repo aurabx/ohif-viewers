@@ -1,3 +1,5 @@
+__webpack_public_path__ = window.PUBLIC_URL;
+
 window.config = {
   routerBasename: '/viewers/v3',
   // routerBasename: '/',
