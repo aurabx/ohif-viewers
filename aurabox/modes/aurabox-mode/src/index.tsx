@@ -198,8 +198,10 @@ function modeFactory() {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [tracked.thumbnailList],
-              rightPanels: [dicomSeg.panel, tracked.measurements],
+              // leftPanels: [tracked.thumbnailList],
+              leftPanels: [aura.thumbnailList],
+              rightPanels: [],
+              // rightPanels: [dicomSeg.panel, tracked.measurements],
               rightPanelDefaultClosed: true,
               viewports: [
                 {

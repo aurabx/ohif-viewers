@@ -1,5 +1,5 @@
 import React from 'react';
-import { WrappedPanelStudyBrowser } from '@ohif/extension-default/src/Panels';
+import { PanelStudyBrowserAura } from './panels';
 
 // TODO:
 // - No loading UI exists yet
@@ -17,11 +17,12 @@ function getPanelModule({
       iconName: 'group-layers',
       iconLabel: 'Studies',
       label: 'Studies',
-      component: WrappedPanelStudyBrowser.bind(null, {
-        commandsManager,
-        extensionManager,
-        servicesManager,
-      }),
+      component: () =>
+        PanelStudyBrowserAura({
+          commandsManager,
+          extensionManager,
+          servicesManager,
+        }),
     },
   ];
 }
