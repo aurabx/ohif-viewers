@@ -1,57 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { HangingProtocolService, utils, ServicesManager } from '@ohif/core';
-import {
-  StudyBrowser,
-  useImageViewer,
-  useViewportGrid,
-  Dialog,
-} from '@ohif/ui';
-import { useTrackedMeasurements } from '@ohif/extension-measurement-tracking/src/getContextModule';
+import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
+import { utils } from '@ohif/core';
 
-const { formatDate } = utils;
-
-type PanelStudyBrowserAuraProps = {
-  servicesManager: ServicesManager;
-  dataSource: {
-    getImageIdsForDisplaySet: (params: any) => any;
-  };
-  getImageSrc: (params: any) => any;
-  getStudiesForPatient: (params: any) => any;
-  requestDisplaySetCreationForStudy: (params: any) => any;
-};
+const { sortStudyInstances, formatDate } = utils;
 
 /**
  *
  * @param {*} param0
  */
-const PanelStudyBrowserAura = ({
+function PanelStudyBrowserAura({
   servicesManager,
   getImageSrc,
-  getStudiesForPatient,
+  getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-}: PanelStudyBrowserAuraProps) => {
+}) {
   const {
-    MeasurementService,
-    DisplaySetService,
-    UIDialogService,
-    HangingProtocolService,
-    UINotificationService,
+    hangingProtocolService,
+    displaySetService,
+    uiNotificationService,
   } = servicesManager.services;
-
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
   const [
-    { activeViewportIndex, viewports, numCols, numRows },
+    { activeViewportIndex, viewports },
     viewportGridService,
   ] = useViewportGrid();
-  const [
-    trackedMeasurements,
-    sendTrackedMeasurementsEvent,
-  ] = useTrackedMeasurements();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -59,22 +36,22 @@ const PanelStudyBrowserAura = ({
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
-  const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
+  const isMounted = useRef(true);
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
     const viewportIndex = activeViewportIndex;
     try {
-      updatedViewports = HangingProtocolService.getViewportsRequireUpdate(
+      updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
         viewportIndex,
         displaySetInstanceUID
       );
     } catch (error) {
       console.warn(error);
-      UINotificationService.show({
+      uiNotificationService.show({
         title: 'Thumbnail Double Click',
         message:
-          'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+          'The selected display sets could not be added to the viewport.',
         type: 'info',
         duration: 3000,
       });
@@ -83,50 +60,27 @@ const PanelStudyBrowserAura = ({
     viewportGridService.setDisplaySetsForViewports(updatedViewports);
   };
 
-  const activeViewportDisplaySetInstanceUIDs =
-    viewports[activeViewportIndex]?.displaySetInstanceUIDs;
-
-  const isSingleViewport = numCols === 1 && numRows === 1;
-
-  useEffect(() => {
-    const added = MeasurementService.EVENTS.MEASUREMENT_ADDED;
-    const addedRaw = MeasurementService.EVENTS.RAW_MEASUREMENT_ADDED;
-    const subscriptions = [];
-
-    [added, addedRaw].forEach(evt => {
-      subscriptions.push(
-        MeasurementService.subscribe(evt, ({ source, measurement }) => {
-          const {
-            referenceSeriesUID: SeriesInstanceUID,
-            referenceStudyUID: StudyInstanceUID,
-          } = measurement;
-
-          sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
-          sendTrackedMeasurementsEvent('TRACK_SERIES', {
-            viewportIndex: activeViewportIndex,
-            StudyInstanceUID,
-            SeriesInstanceUID,
-          });
-        }).unsubscribe
-      );
-    });
-
-    return () => {
-      subscriptions.forEach(unsub => {
-        unsub();
-      });
-    };
-  }, [MeasurementService, activeViewportIndex, sendTrackedMeasurementsEvent]);
-
-  const { trackedStudy, trackedSeries } = trackedMeasurements.context;
-
   // ~~ studyDisplayList
   useEffect(() => {
     // Fetch all studies for the patient in each primary study
     async function fetchStudiesForPatient(StudyInstanceUID) {
-      const qidoStudiesForPatient =
-        (await getStudiesForPatient(StudyInstanceUID)) || [];
-      // TODO: This should be "naturalized DICOM JSON" studies
+      // current study qido
+      const qidoForStudyUID = await dataSource.query.studies.search({
+        studyInstanceUid: StudyInstanceUID,
+      });
+
+      let qidoStudiesForPatient = qidoForStudyUID;
+
+      // try to fetch the prior studies based on the patientID if the
+      // server can respond.
+      try {
+        qidoStudiesForPatient = await getStudiesForPatientByMRN(
+          qidoForStudyUID
+        );
+      } catch (error) {
+        console.warn(error);
+      }
+
       const mappedStudies = _mapDataSourceStudies(qidoStudiesForPatient);
       const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
         return {
@@ -135,7 +89,6 @@ const PanelStudyBrowserAura = ({
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
           numInstances: qidoStudy.NumInstances,
-          // displaySets: []
         };
       });
 
@@ -156,89 +109,79 @@ const PanelStudyBrowserAura = ({
 
     StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [StudyInstanceUIDs, getStudiesForPatient]);
+  }, [StudyInstanceUIDs, getStudiesForPatientByMRN]);
 
-  // ~~ Initial Thumbnails
+  // // ~~ Initial Thumbnails
   useEffect(() => {
-    const currentDisplaySets = DisplaySetService.activeDisplaySets;
+    const currentDisplaySets = displaySetService.activeDisplaySets;
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
-      const displaySet = DisplaySetService.getDisplaySetByUID(
+      const displaySet = displaySetService.getDisplaySetByUID(
         dSet.displaySetInstanceUID
       );
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
-      // TODO: Is it okay that imageIds are not returned here for SR displaysets?
+      // TODO: Is it okay that imageIds are not returned here for SR displaySets?
       if (imageId) {
         // When the image arrives, render it and store the result in the thumbnailImgSrcMap
         newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
           imageId
         );
-        setThumbnailImageSrcMap(prevState => {
-          return { ...prevState, ...newImageSrcEntry };
-        });
+        if (isMounted.current) {
+          setThumbnailImageSrcMap(prevState => {
+            return { ...prevState, ...newImageSrcEntry };
+          });
+        }
       }
     });
+    return () => {
+      isMounted.current = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [DisplaySetService, dataSource, getImageSrc]);
+  }, []);
 
   // ~~ displaySets
   useEffect(() => {
     // TODO: Are we sure `activeDisplaySets` will always be accurate?
-    const currentDisplaySets = DisplaySetService.activeDisplaySets;
+    const currentDisplaySets = displaySetService.activeDisplaySets;
     const mappedDisplaySets = _mapDisplaySets(
       currentDisplaySets,
-      thumbnailImageSrcMap,
-      trackedSeries,
-      viewports,
-      isSingleViewport,
-      dataSource,
-      DisplaySetService,
-      UIDialogService,
-      UINotificationService
+      thumbnailImageSrcMap
     );
+    sortStudyInstances(mappedDisplaySets);
 
     setDisplaySets(mappedDisplaySets);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    DisplaySetService.activeDisplaySets,
-    trackedSeries,
-    thumbnailImageSrcMap,
-    viewports,
-    dataSource,
-  ]);
+  }, [thumbnailImageSrcMap]);
+
   // ~~ subscriptions --> displaySets
   useEffect(() => {
     // DISPLAY_SETS_ADDED returns an array of DisplaySets that were added
-    const SubscriptionDisplaySetsAdded = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
+    const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
-        const { displaySetsAdded, options } = data;
+        const { displaySetsAdded } = data;
         displaySetsAdded.forEach(async dSet => {
-          const displaySetInstanceUID = dSet.displaySetInstanceUID;
-
           const newImageSrcEntry = {};
-          const displaySet = DisplaySetService.getDisplaySetByUID(
-            displaySetInstanceUID
+          const displaySet = displaySetService.getDisplaySetByUID(
+            dSet.displaySetInstanceUID
           );
-
-          if (options.madeInClient) {
-            setJumpToDisplaySet(displaySetInstanceUID);
-          }
-
           const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
           const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
           // TODO: Is it okay that imageIds are not returned here for SR displaysets?
           if (imageId) {
             // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-            newImageSrcEntry[displaySetInstanceUID] = await getImageSrc(
-              imageId
+            newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
+              imageId,
+              dSet.initialViewport
             );
-            setThumbnailImageSrcMap(prevState => {
-              return { ...prevState, ...newImageSrcEntry };
-            });
+            if (isMounted.current) {
+              setThumbnailImageSrcMap(prevState => {
+                return { ...prevState, ...newImageSrcEntry };
+              });
+            }
           }
         });
       }
@@ -246,21 +189,13 @@ const PanelStudyBrowserAura = ({
 
     // TODO: Will this always hold _all_ the displaySets we care about?
     // DISPLAY_SETS_CHANGED returns `DisplaySerService.activeDisplaySets`
-    const SubscriptionDisplaySetsChanged = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+    const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
       changedDisplaySets => {
         const mappedDisplaySets = _mapDisplaySets(
           changedDisplaySets,
-          thumbnailImageSrcMap,
-          trackedSeries,
-          viewports,
-          isSingleViewport,
-          dataSource,
-          DisplaySetService,
-          UIDialogService,
-          UINotificationService
+          thumbnailImageSrcMap
         );
-
         setDisplaySets(mappedDisplaySets);
       }
     );
@@ -270,14 +205,7 @@ const PanelStudyBrowserAura = ({
       SubscriptionDisplaySetsChanged.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    DisplaySetService,
-    dataSource,
-    getImageSrc,
-    thumbnailImageSrcMap,
-    trackedSeries,
-    viewports,
-  ]);
+  }, []);
 
   const tabs = _createStudyBrowserTabs(
     StudyInstanceUIDs,
@@ -291,7 +219,8 @@ const PanelStudyBrowserAura = ({
       StudyInstanceUID
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
-      ? [
+      ? // eslint-disable-next-line prettier/prettier
+        [
           ...expandedStudyInstanceUIDs.filter(
             stdyUid => stdyUid !== StudyInstanceUID
           ),
@@ -303,82 +232,40 @@ const PanelStudyBrowserAura = ({
     if (!shouldCollapseStudy) {
       const madeInClient = true;
       requestDisplaySetCreationForStudy(
-        DisplaySetService,
+        displaySetService,
         StudyInstanceUID,
         madeInClient
       );
     }
   }
 
-  useEffect(() => {
-    if (jumpToDisplaySet) {
-      // Get element by displaySetInstanceUID
-      const displaySetInstanceUID = jumpToDisplaySet;
-      const element = document.getElementById(
-        `thumbnail-${displaySetInstanceUID}`
-      );
-
-      if (element && typeof element.scrollIntoView === 'function') {
-        // TODO: Any way to support IE here?
-        element.scrollIntoView({ behavior: 'smooth' });
-
-        setJumpToDisplaySet(null);
-      }
-    }
-  }, [jumpToDisplaySet, expandedStudyInstanceUIDs, activeTabName]);
-
-  useEffect(() => {
-    if (!jumpToDisplaySet) {
-      return;
-    }
-
-    const displaySetInstanceUID = jumpToDisplaySet;
-    // Set the activeTabName and expand the study
-    const thumbnailLocation = _findTabAndStudyOfDisplaySet(
-      displaySetInstanceUID,
-      tabs
-    );
-    if (!thumbnailLocation) {
-      console.warn('jumpToThumbnail: displaySet thumbnail not found.');
-
-      return;
-    }
-    const { tabName, StudyInstanceUID } = thumbnailLocation;
-    setActiveTabName(tabName);
-    const studyExpanded = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
-    if (!studyExpanded) {
-      const updatedExpandedStudyInstanceUIDs = [
-        ...expandedStudyInstanceUIDs,
-        StudyInstanceUID,
-      ];
-      setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
-    }
-  }, [expandedStudyInstanceUIDs, jumpToDisplaySet, tabs]);
+  const activeDisplaySetInstanceUIDs =
+    viewports[activeViewportIndex]?.displaySetInstanceUIDs;
 
   return (
     <StudyBrowser
       tabs={tabs}
+      servicesManager={servicesManager}
       activeTabName={activeTabName}
+      onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+      activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
       expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
       onClickStudy={_handleStudyClick}
       onClickTab={clickedTabName => {
         setActiveTabName(clickedTabName);
       }}
-      onClickUntrack={displaySetInstanceUID => {
-        const displaySet = DisplaySetService.getDisplaySetByUID(
-          displaySetInstanceUID
-        );
-        // TODO: shift this somewhere else where we're centralizing this logic?
-        // Potentially a helper from displaySetInstanceUID to this
-        sendTrackedMeasurementsEvent('UNTRACK_SERIES', {
-          SeriesInstanceUID: displaySet.SeriesInstanceUID,
-        });
-      }}
-      onClickThumbnail={() => {}}
-      onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
-      activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
     />
   );
+}
+
+PanelStudyBrowserAura.propTypes = {
+  servicesManager: PropTypes.object.isRequired,
+  dataSource: PropTypes.shape({
+    getImageIdsForDisplaySet: PropTypes.func.isRequired,
+  }).isRequired,
+  getImageSrc: PropTypes.func.isRequired,
+  getStudiesForPatientByMRN: PropTypes.func.isRequired,
+  requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
 };
 
 export default PanelStudyBrowserAura;
@@ -405,139 +292,48 @@ function _mapDataSourceStudies(studies) {
   });
 }
 
-function _mapDisplaySets(
-  displaySets,
-  thumbnailImageSrcMap,
-  trackedSeriesInstanceUIDs,
-  viewports, // TODO: make array of `displaySetInstanceUIDs`?
-  isSingleViewport,
-  dataSource,
-  DisplaySetService,
-  UIDialogService,
-  UINotificationService
-) {
+function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
-  displaySets.forEach(ds => {
-    const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
-    const componentType = _getComponentType(ds.Modality);
-    const viewportIdentificator = isSingleViewport
-      ? []
-      : viewports.reduce((acc, viewportData, index) => {
-          if (
-            viewportData?.displaySetInstanceUIDs?.includes(
-              ds.displaySetInstanceUID
-            )
-          ) {
-            acc.push(viewportData.viewportLabel);
-          }
-          return acc;
-        }, []);
 
-    const array =
-      componentType === 'thumbnailTracked'
-        ? thumbnailDisplaySets
-        : thumbnailNoImageDisplaySets;
+  displaySets
+    .filter(ds => !ds.excludeFromThumbnailBrowser)
+    .forEach(ds => {
+      const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
+      const componentType = _getComponentType(ds.Modality);
 
-    const { displaySetInstanceUID, images } = ds;
+      const array =
+        componentType === 'thumbnail'
+          ? thumbnailDisplaySets
+          : thumbnailNoImageDisplaySets;
 
-    const BodyPartExamined =
-      images && images.length > 0 && images[0].BodyPartExamined
-        ? images[0].BodyPartExamined
-        : '';
+      const { images } = ds;
 
-    const thumbnailProps = {
-      displaySetInstanceUID,
-      description: ds.SeriesDescription,
-      seriesNumber: ds.SeriesNumber,
-      modality: ds.Modality,
-      seriesDate: formatDate(ds.SeriesDate),
-      numInstances: ds.numImageFrames,
-      StudyInstanceUID: ds.StudyInstanceUID,
-      componentType,
-      imageSrc,
-      dragData: {
-        type: 'displayset',
-        displaySetInstanceUID,
-        // ... Any other data to pass
-      },
-      bodyPartExamined: BodyPartExamined,
-      isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
-      viewportIdentificator,
-    };
+      const bodyPartExamined =
+        images && images.length > 0 && images[0].BodyPartExamined
+          ? images[0].BodyPartExamined
+          : '';
 
-    if (componentType === 'thumbnailNoImage') {
-      if (dataSource.reject && dataSource.reject.series) {
-        thumbnailProps.canReject = true;
-        thumbnailProps.onReject = () => {
-          UIDialogService.create({
-            id: 'ds-reject-sr',
-            centralize: true,
-            isDraggable: false,
-            showOverlay: true,
-            content: Dialog,
-            contentProps: {
-              title: 'Delete Report',
-              body: () => (
-                <div className="p-4 text-white bg-primary-dark">
-                  <p>Are you sure you want to delete this report?</p>
-                  <p>This action cannot be undone.</p>
-                </div>
-              ),
-              actions: [
-                { id: 'cancel', text: 'Cancel', type: 'secondary' },
-                {
-                  id: 'yes',
-                  text: 'Yes',
-                  type: 'primary',
-                  classes: ['reject-yes-button'],
-                },
-              ],
-              onClose: () => UIDialogService.dismiss({ id: 'ds-reject-sr' }),
-              onShow: () => {
-                const yesButton = document.querySelector('.reject-yes-button');
-
-                yesButton.focus();
-              },
-              onSubmit: async ({ action }) => {
-                switch (action.id) {
-                  case 'yes':
-                    try {
-                      await dataSource.reject.series(
-                        ds.StudyInstanceUID,
-                        ds.SeriesInstanceUID
-                      );
-                      DisplaySetService.deleteDisplaySet(displaySetInstanceUID);
-                      UIDialogService.dismiss({ id: 'ds-reject-sr' });
-                      UINotificationService.show({
-                        title: 'Delete Report',
-                        message: 'Report deleted successfully',
-                        type: 'success',
-                      });
-                    } catch (error) {
-                      UIDialogService.dismiss({ id: 'ds-reject-sr' });
-                      UINotificationService.show({
-                        title: 'Delete Report',
-                        message: 'Failed to delete report',
-                        type: 'error',
-                      });
-                    }
-                    break;
-                  case 'cancel':
-                    UIDialogService.dismiss({ id: 'ds-reject-sr' });
-                    break;
-                }
-              },
-            },
-          });
-        };
-      } else {
-        thumbnailProps.canReject = false;
-      }
-    }
-
-    array.push(thumbnailProps);
-  });
+      array.push({
+        displaySetInstanceUID: ds.displaySetInstanceUID,
+        description: ds.SeriesDescription || '',
+        seriesNumber: ds.SeriesNumber,
+        modality: ds.Modality,
+        seriesDate: ds.SeriesDate,
+        seriesTime: ds.SeriesTime,
+        numInstances: ds.numImageFrames,
+        countIcon: ds.countIcon,
+        StudyInstanceUID: ds.StudyInstanceUID,
+        componentType,
+        imageSrc,
+        dragData: {
+          type: 'displayset',
+          displaySetInstanceUID: ds.displaySetInstanceUID,
+          // .. Any other data to pass
+        },
+        bodyPartExamined,
+      });
+    });
 
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
@@ -545,6 +341,7 @@ function _mapDisplaySets(
 const thumbnailNoImageModalities = [
   'SR',
   'SEG',
+  'SM',
   'RTSTRUCT',
   'RTPLAN',
   'RTDOSE',
@@ -552,10 +349,11 @@ const thumbnailNoImageModalities = [
 
 function _getComponentType(Modality) {
   if (thumbnailNoImageModalities.includes(Modality)) {
+    // TODO probably others.
     return 'thumbnailNoImage';
   }
 
-  return 'thumbnailTracked';
+  return 'thumbnail';
 }
 
 /**
@@ -579,9 +377,7 @@ function _createStudyBrowserTabs(
   const recentStudies = [];
   const allStudies = [];
 
-  // Iterate over each study...
   studyDisplayList.forEach(study => {
-    // Find it's display sets
     const displaySetsForStudy = displaySets
       .filter(ds => ds.StudyInstanceUID === study.studyInstanceUid)
       .sort((a, b) => {
@@ -598,21 +394,12 @@ function _createStudyBrowserTabs(
 
         return seriesDateA - seriesDateB;
       });
-
-    // Sort them
-    // const sortedDisplaySetsForStudy = utils.sortBySeriesDate(
-    //   displaySetsForStudy
-    // );
-
-    // Map the study to it's tab/view representation
     const tabStudy = Object.assign({}, study, {
       displaySets: displaySetsForStudy,
     });
 
-    // Add the "tab study" to the 'primary', 'recent', and/or 'all' tab group(s)
     if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
       primaryStudies.push(tabStudy);
-      allStudies.push(tabStudy);
     } else {
       // TODO: Filter allStudies to dates within one year of current date
       recentStudies.push(tabStudy);
@@ -632,46 +419,28 @@ function _createStudyBrowserTabs(
     {
       name: 'primary',
       label: 'Primary',
-      studies: primaryStudies.sort((studyA, studyB) =>
-        _sortStudies(studyA, studyB)
-      ),
+      studies: primaryStudies,
+      // studies: primaryStudies.sort((studyA, studyB) =>
+      //   _sortStudies(studyA, studyB)
+      // ),
     },
     {
       name: 'recent',
       label: 'Recent',
-      studies: recentStudies.sort((studyA, studyB) =>
-        _sortStudies(studyA, studyB)
-      ),
+      studies: recentStudies,
+      // studies: recentStudies.sort((studyA, studyB) =>
+      //   _sortStudies(studyA, studyB)
+      // ),
     },
     {
       name: 'all',
       label: 'All',
-      studies: allStudies.sort((studyA, studyB) =>
-        _sortStudies(studyA, studyB)
-      ),
+      studies: allStudies,
+      // studies: allStudies.sort((studyA, studyB) =>
+      //   _sortStudies(studyA, studyB)
+      // ),
     },
   ];
 
   return tabs;
-}
-
-function _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs) {
-  for (let t = 0; t < tabs.length; t++) {
-    const { studies } = tabs[t];
-
-    for (let s = 0; s < studies.length; s++) {
-      const { displaySets } = studies[s];
-
-      for (let d = 0; d < displaySets.length; d++) {
-        const displaySet = displaySets[d];
-
-        if (displaySet.displaySetInstanceUID === displaySetInstanceUID) {
-          return {
-            tabName: tabs[t].name,
-            StudyInstanceUID: studies[s].studyInstanceUid,
-          };
-        }
-      }
-    }
-  }
 }

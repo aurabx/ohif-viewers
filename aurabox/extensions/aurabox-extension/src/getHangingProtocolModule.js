@@ -1,50 +1,66 @@
+import hpMNGrid from '@ohif/extension-default/src/hpMNGrid';
+
 const auraDefault = {
   id: 'auraDefault',
   locked: true,
+  // Don't store this hanging protocol as it applies to the currently active
+  // display set by default
+  // cacheId: null,
   hasUpdatedPriorsInformation: false,
   name: 'Default',
-  createdDate: '2022-09-21T19:22:08.894Z',
-  modifiedDate: '2022-09-21T19:22:08.894Z',
+  createdDate: '2021-02-23T19:22:08.894Z',
+  modifiedDate: '2023-04-01',
   availableTo: {},
   editableBy: {},
   protocolMatchingRules: [],
-  imageLoadStrategy: 'nth', // interleaveTopToBottom | interleaveCenter | nth
   toolGroupIds: ['default'],
+  // -1 would be used to indicate active only, whereas other values are
+  // the number of required priors referenced - so 0 means active with
+  // 0 or more priors.
+  numberOfPriorsReferenced: 0,
+  // Default viewport is used to define the viewport when
+  // additional viewports are added using the layout tool
+  defaultViewport: {
+    viewportOptions: {
+      viewportType: 'stack',
+      toolGroupId: 'default',
+      allowUnmatchedView: true,
+    },
+    displaySets: [
+      {
+        id: 'defaultDisplaySetId',
+        matchedDisplaySetsIndex: -1,
+      },
+    ],
+  },
   displaySetSelectors: {
     defaultDisplaySetId: {
-      // Unused currently
-      imageMatchingRules: [],
       // Matches displaysets, NOT series
       seriesMatchingRules: [
+        // Try to match series with images by default, to prevent weird display
+        // on SEG/SR containing studies
         {
-          id: 'YbmMy3b7pz7GLiaT',
-          weight: 4,
-          attribute: 'SeriesDescription',
+          attribute: 'numImageFrames',
           constraint: {
-            doesNotEqual: {
-              value: 'Report',
-            },
+            greaterThan: { value: 0 },
           },
-          required: true,
         },
+        // This display set will select the specified items by preference
+        // It has no affect if nothing is specified in the URL.
         {
-          id: 'YbmMy3b7pz7GLzaT',
-          weight: 4,
-          attribute: 'Modality',
+          attribute: 'isDisplaySetFromUrl',
+          weight: 10,
           constraint: {
-            doesNotEqual: {
-              value: 'DOC',
-            },
+            equals: true,
           },
-          required: true,
         },
       ],
-      studyMatchingRules: [],
+      // Can be used to select matching studies
+      // studyMatchingRules: [],
     },
   },
   stages: [
     {
-      id: 'hYbmMy3b7pz7GLiaT',
       name: 'default',
       viewportStructure: {
         layoutType: 'grid',
@@ -56,15 +72,21 @@ const auraDefault = {
       viewports: [
         {
           viewportOptions: {
+            viewportType: 'stack',
             toolGroupId: 'default',
-            // initialImageOptions: {
+            // This will specify the initial image options index if it matches in the URL
+            // and will otherwise not specify anything.
+            initialImageOptions: {
+              custom: 'sopInstanceLocation',
+            },
+            // Other options for initialImageOptions, which can be included in the default
+            // custom attribute, or can be provided directly.
             //   index: 180,
             //   preset: 'middle', // 'first', 'last', 'middle'
             // },
           },
           displaySets: [
             {
-              options: [],
               id: 'defaultDisplaySetId',
             },
           ],
@@ -73,8 +95,6 @@ const auraDefault = {
       createdDate: '2021-02-23T18:32:42.850Z',
     },
   ],
-  //imageLoadStrategy: 'default', // "default" , "interleaveTopToBottom",  "interleaveCenter"
-  numberOfPriorsReferenced: -1,
 };
 
 function getHangingProtocolModule() {
@@ -82,6 +102,11 @@ function getHangingProtocolModule() {
     {
       name: auraDefault.id,
       protocol: auraDefault,
+    },
+    // Create a MxN hanging protocol available by default
+    {
+      name: hpMNGrid.id,
+      protocol: hpMNGrid,
     },
   ];
 }

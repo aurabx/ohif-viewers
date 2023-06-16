@@ -62,7 +62,7 @@ function WrappedPanelStudyBrowserAura({
       servicesManager={servicesManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
-      getStudiesForPatient={_getStudiesForPatient}
+      getStudiesForPatientByMRN={_getStudiesForPatient}
       requestDisplaySetCreationForStudy={_requestDisplaySetCreationForStudy}
     />
   );
