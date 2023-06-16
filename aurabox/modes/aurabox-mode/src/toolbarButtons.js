@@ -295,6 +295,22 @@ const toolbarButtons = [
     },
   },
   {
+    id: 'ImageSyncAura',
+    type: 'ohif.action',
+    props: {
+      type: 'toggle',
+      icon: 'link',
+      label: 'Image Sync Aura',
+      commands: [
+        {
+          commandName: 'toggleStackImageSyncAura',
+          commandOptions: {},
+          context: 'CORNERSTONE',
+        },
+      ],
+    },
+  },
+  {
     id: 'Capture',
     type: 'ohif.action',
     props: {
@@ -428,6 +444,18 @@ const toolbarButtons = [
             context: 'CORNERSTONE',
           },
         ]),
+        _createToggleButton(
+          'StackImageSyncAura',
+          'link',
+          'Stack Image Sync Aura',
+          [
+            {
+              commandName: 'toggleStackImageSyncAura',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ]
+        ),
         _createToggleButton(
           'ReferenceLines',
           'tool-referenceLines', // change this with the new icon

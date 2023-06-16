@@ -3,6 +3,8 @@ import getHangingProtocolModule from './getHangingProtocolModule.js';
 import getPanelModule from './getPanelModule';
 import getStudiesForPatient from './getStudiesForPatient';
 import { Types } from '@ohif/core/src';
+import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
+import { getEnabledElement } from '@cornerstonejs/core';
 /**
  * You can remove any of the following modules if you don't need them.
  */
@@ -92,11 +94,33 @@ const auraboxExtension: Types.Extensions.Extension = {
    * object of functions, definitions is an object of available commands, their
    * options, and defaultContext is the default context for the command to run against.
    */
-  // getCommandsModule: ({
-  //   servicesManager,
-  //   commandsManager,
-  //   extensionManager,
-  // }) => {},
+  getCommandsModule: ({
+    servicesManager,
+    commandsManager,
+    extensionManager,
+  }) => {
+    const actions = {
+      toggleStackImageSyncAura: ({ toggledState }) => {
+        toggleStackImageSync({
+          getEnabledElement,
+          servicesManager,
+          toggledState,
+        });
+      },
+    };
+
+    const definitions = {
+      toggleStackImageSyncAura: {
+        commandFn: actions.toggleStackImageSyncAura,
+      },
+    };
+
+    return {
+      actions,
+      definitions,
+      defaultContext: 'CORNERSTONE',
+    };
+  },
   /**
    * ContextModule should provide a list of context that will be available in OHIF
    * and will be provided to the Modes. A context is a state that is shared OHIF.
