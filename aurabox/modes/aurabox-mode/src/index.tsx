@@ -1,7 +1,9 @@
 import { hotkeys } from '@ohif/core';
-import toolbarButtons from '@ohif/mode-longitudinal/src/toolbarButtons.js';
+// import toolbarButtons from '@ohif/mode-longitudinal/src/toolbarButtons.js';
+import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
-import initToolGroups from '@ohif/mode-longitudinal/src/initToolGroups.js';
+// import initToolGroups from '@ohif/mode-longitudinal/src/initToolGroups.js';
+import initToolGroups from './initToolGroups.js';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -129,6 +131,7 @@ function modeFactory() {
         'Zoom',
         'WindowLevel',
         'Pan',
+        'ImageSyncAura',
         'Capture',
         'Layout',
         'MPR',

@@ -1,6 +1,10 @@
-name: Aurabox deploy
+name: Aurabox build and artifact
 
-on: [pull_request, push]
+on:
+  push:
+    branches:
+      - 'aura/master'
+      - 'aura/develop'
 
 permissions:
   contents: read
