@@ -3,7 +3,7 @@ import getHangingProtocolModule from './getHangingProtocolModule.js';
 import getPanelModule from './getPanelModule';
 import getStudiesForPatient from './getStudiesForPatient';
 import { Types } from '@ohif/core/src';
-import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
+import toggleStackImageSyncAura from './utils/stackSync/toggleStackImageSyncAura';
 import { getEnabledElement } from '@cornerstonejs/core';
 /**
  * You can remove any of the following modules if you don't need them.
@@ -101,7 +101,7 @@ const auraboxExtension: Types.Extensions.Extension = {
   }) => {
     const actions = {
       toggleStackImageSyncAura: ({ toggledState }) => {
-        toggleStackImageSync({
+        toggleStackImageSyncAura({
           getEnabledElement,
           servicesManager,
           toggledState,

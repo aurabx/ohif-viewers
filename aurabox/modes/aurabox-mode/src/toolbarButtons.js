@@ -300,7 +300,7 @@ const toolbarButtons = [
     props: {
       type: 'toggle',
       icon: 'link',
-      label: 'Image Sync Aura',
+      label: 'Image Sync (Beta)',
       commands: [
         {
           commandName: 'toggleStackImageSyncAura',
@@ -447,7 +447,7 @@ const toolbarButtons = [
         _createToggleButton(
           'StackImageSyncAura',
           'link',
-          'Stack Image Sync Aura',
+          'Stack Image Sync (Beta)',
           [
             {
               commandName: 'toggleStackImageSyncAura',

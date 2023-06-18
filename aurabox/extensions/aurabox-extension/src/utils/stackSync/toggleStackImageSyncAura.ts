@@ -6,7 +6,7 @@ import calculateViewportRegistrations from './calculateViewportRegistrations';
 // ]}
 let STACK_IMAGE_SYNC_GROUPS_INFO = [];
 
-export default function toggleStackImageSync({
+export default function toggleStackImageSyncAura({
   toggledState,
   servicesManager,
   getEnabledElement,
