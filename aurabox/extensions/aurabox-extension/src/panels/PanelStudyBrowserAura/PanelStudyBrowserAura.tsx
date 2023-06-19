@@ -668,26 +668,26 @@ function _createStudyBrowserTabs(
     {
       name: 'primary',
       label: 'Primary',
-      studies: primaryStudies,
-      // studies: primaryStudies.sort((studyA, studyB) =>
-      //   _byDate(studyA.date, studyB.date)
-      // ),
+      // studies: primaryStudies,
+      studies: primaryStudies.sort((studyA, studyB) =>
+        _byDate(studyA.date, studyB.date)
+      ),
     },
     {
       name: 'recent',
       label: 'Recent',
-      studies: recentStudies,
-      // studies: recentStudies.sort((studyA, studyB) =>
-      //   _byDate(studyA.date, studyB.date)
-      // ),
+      // studies: recentStudies,
+      studies: recentStudies.sort((studyA, studyB) =>
+        _byDate(studyA.date, studyB.date)
+      ),
     },
     {
       name: 'all',
       label: 'All',
-      studies: allStudies,
-      // studies: allStudies.sort((studyA, studyB) =>
-      //   _byDate(studyA.date, studyB.date)
-      // ),
+      // studies: allStudies,
+      studies: allStudies.sort((studyA, studyB) =>
+        _byDate(studyA.date, studyB.date)
+      ),
     },
   ];
 
