@@ -126,11 +126,11 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   // but there are still dependencies on having the appConfig modes defined
   appConfig.modes = appConfig.loadedModes;
 
-  // if (appConfig.headers) {
-  //   servicesManager.services.UserAuthenticationService.getAuthorizationHeader = () => {
-  //     return appConfig.headers;
-  //   };
-  // }
+  if (appConfig.headers) {
+    servicesManager.services.UserAuthenticationService.getAuthorizationHeader = () => {
+      return appConfig.headers;
+    };
+  }
 
   return {
     appConfig,
