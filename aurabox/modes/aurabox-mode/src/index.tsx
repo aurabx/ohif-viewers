@@ -87,7 +87,14 @@ function modeFactory() {
         toolGroupService,
         panelService,
         segmentationService,
+        userAuthenticationService,
       } = servicesManager.services;
+
+      // userAuthenticationService.setServiceImplementation({
+      //   getAuthorizationHeader: () => ({
+      //     Authorization: 'Bearer ' + token,
+      //   }),
+      // });
 
       measurementService.clearMeasurements();
 

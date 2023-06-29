@@ -127,7 +127,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   appConfig.modes = appConfig.loadedModes;
 
   if (appConfig.headers) {
-    servicesManager.services.UserAuthenticationService.getAuthorizationHeader = () => {
+    servicesManager.services.userAuthenticationService.getAuthorizationHeader = () => {
       return appConfig.headers;
     };
   }
