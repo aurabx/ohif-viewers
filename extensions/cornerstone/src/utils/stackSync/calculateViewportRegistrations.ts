@@ -82,9 +82,7 @@ function calculateViewportsSpatialRegistration(
   spatialRegistrationMetadataProvider.add([viewport1.id, viewport2.id], mat);
 }
 
-export default function calculateViewportRegistrations(
-  viewports: Types.IViewportId[]
-) {
+export default function calculateViewportRegistrations(viewports: Types.IViewportId[]) {
   const viewportPairs = _getViewportPairs(viewports);
 
   for (const [viewport, nextViewport] of viewportPairs) {
