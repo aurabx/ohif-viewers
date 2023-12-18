@@ -102,7 +102,6 @@ const auraboxExtension: Types.Extensions.Extension = {
     const actions = {
       toggleStackImageSyncAura: ({ toggledState }) => {
         toggleStackImageSyncAura({
-          getEnabledElement,
           servicesManager,
           toggledState,
         });

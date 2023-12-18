@@ -38,10 +38,8 @@ function PanelStudyBrowserAura({
     { activeViewportIndex, viewports, numCols, numRows },
     viewportGridService,
   ] = useViewportGrid();
-  const [
-    trackedMeasurements,
-    sendTrackedMeasurementsEvent,
-  ] = useTrackedMeasurements();
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] =
+    useTrackedMeasurements();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -51,7 +49,7 @@ function PanelStudyBrowserAura({
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
 
-  const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
+  const onDoubleClickThumbnailHandler = (displaySetInstanceUID) => {
     let updatedViewports = [];
     const viewportIndex = activeViewportIndex;
     try {
@@ -81,7 +79,7 @@ function PanelStudyBrowserAura({
     const addedRaw = measurementService.EVENTS.RAW_MEASUREMENT_ADDED;
     const subscriptions = [];
 
-    [added, addedRaw].forEach(evt => {
+    [added, addedRaw].forEach((evt) => {
       subscriptions.push(
         measurementService.subscribe(evt, ({ source, measurement }) => {
           const {
@@ -100,7 +98,7 @@ function PanelStudyBrowserAura({
     });
 
     return () => {
-      subscriptions.forEach(unsub => {
+      subscriptions.forEach((unsub) => {
         unsub();
       });
     };
@@ -122,15 +120,14 @@ function PanelStudyBrowserAura({
       // try to fetch the prior studies based on the patientID if the
       // server can respond.
       try {
-        qidoStudiesForPatient = await getStudiesForPatientByMRN(
-          qidoForStudyUID
-        );
+        qidoStudiesForPatient =
+          await getStudiesForPatientByMRN(qidoForStudyUID);
       } catch (error) {
         console.warn(error);
       }
 
       const mappedStudies = _mapDataSourceStudies(qidoStudiesForPatient);
-      const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
+      const actuallyMappedStudies = mappedStudies.map((qidoStudy) => {
         return {
           studyInstanceUid: qidoStudy.StudyInstanceUID,
           date: formatDate(qidoStudy.StudyDate),
@@ -140,12 +137,12 @@ function PanelStudyBrowserAura({
         };
       });
 
-      setStudyDisplayList(prevArray => {
+      setStudyDisplayList((prevArray) => {
         const ret = [...prevArray];
         for (const study of actuallyMappedStudies) {
           if (
             !prevArray.find(
-              it => it.studyInstanceUid === study.studyInstanceUid
+              (it) => it.studyInstanceUid === study.studyInstanceUid
             )
           ) {
             ret.push(study);
@@ -155,7 +152,7 @@ function PanelStudyBrowserAura({
       });
     }
 
-    StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
+    StudyInstanceUIDs.forEach((sid) => fetchStudiesForPatient(sid));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [StudyInstanceUIDs, getStudiesForPatientByMRN]);
 
@@ -167,7 +164,7 @@ function PanelStudyBrowserAura({
       return;
     }
 
-    currentDisplaySets.forEach(async dSet => {
+    currentDisplaySets.forEach(async (dSet) => {
       const newImageSrcEntry = {};
       const displaySet = displaySetService.getDisplaySetByUID(
         dSet.displaySetInstanceUID
@@ -178,10 +175,9 @@ function PanelStudyBrowserAura({
       // TODO: Is it okay that imageIds are not returned here for SR displaysets?
       if (imageId) {
         // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-        newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
-          imageId
-        );
-        setThumbnailImageSrcMap(prevState => {
+        newImageSrcEntry[dSet.displaySetInstanceUID] =
+          await getImageSrc(imageId);
+        setThumbnailImageSrcMap((prevState) => {
           return { ...prevState, ...newImageSrcEntry };
         });
       }
@@ -223,9 +219,9 @@ function PanelStudyBrowserAura({
     // DISPLAY_SETS_ADDED returns an array of DisplaySets that were added
     const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
-      data => {
+      (data) => {
         const { displaySetsAdded, options } = data;
-        displaySetsAdded.forEach(async dSet => {
+        displaySetsAdded.forEach(async (dSet) => {
           const displaySetInstanceUID = dSet.displaySetInstanceUID;
 
           const newImageSrcEntry = {};
@@ -243,10 +239,9 @@ function PanelStudyBrowserAura({
           // TODO: Is it okay that imageIds are not returned here for SR displaysets?
           if (imageId) {
             // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-            newImageSrcEntry[displaySetInstanceUID] = await getImageSrc(
-              imageId
-            );
-            setThumbnailImageSrcMap(prevState => {
+            newImageSrcEntry[displaySetInstanceUID] =
+              await getImageSrc(imageId);
+            setThumbnailImageSrcMap((prevState) => {
               return { ...prevState, ...newImageSrcEntry };
             });
           }
@@ -258,7 +253,7 @@ function PanelStudyBrowserAura({
     // DISPLAY_SETS_CHANGED returns `DisplaySerService.activeDisplaySets`
     const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
-      changedDisplaySets => {
+      (changedDisplaySets) => {
         const mappedDisplaySets = _mapDisplaySets(
           changedDisplaySets,
           thumbnailImageSrcMap,
@@ -298,13 +293,12 @@ function PanelStudyBrowserAura({
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
-    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(
-      StudyInstanceUID
-    );
+    const shouldCollapseStudy =
+      expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? [
           ...expandedStudyInstanceUIDs.filter(
-            stdyUid => stdyUid !== StudyInstanceUID
+            (stdyUid) => stdyUid !== StudyInstanceUID
           ),
         ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
@@ -373,10 +367,10 @@ function PanelStudyBrowserAura({
       activeTabName={activeTabName}
       expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
       onClickStudy={_handleStudyClick}
-      onClickTab={clickedTabName => {
+      onClickTab={(clickedTabName) => {
         setActiveTabName(clickedTabName);
       }}
-      onClickUntrack={displaySetInstanceUID => {
+      onClickUntrack={(displaySetInstanceUID) => {
         const displaySet = displaySetService.getDisplaySetByUID(
           displaySetInstanceUID
         );
@@ -411,7 +405,7 @@ export default PanelStudyBrowserAura;
  * @param {*} studies
  */
 function _mapDataSourceStudies(studies) {
-  return studies.map(study => {
+  return studies.map((study) => {
     // TODO: Why does the data source return in this format?
     return {
       AccessionNumber: study.accession,
@@ -441,25 +435,24 @@ function _mapDisplaySets(
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
   displaySets
-    .filter(ds => !ds.excludeFromThumbnailBrowser)
-    .forEach(ds => {
+    .filter((ds) => !ds.excludeFromThumbnailBrowser)
+    .forEach((ds) => {
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds.Modality);
       const numPanes = viewportGridService.getNumViewportPanes();
-      const viewportIdentificator =
-        numPanes === 1
-          ? []
-          : viewports.reduce((acc, viewportData, index) => {
-              if (
-                index < numPanes &&
-                viewportData?.displaySetInstanceUIDs?.includes(
-                  ds.displaySetInstanceUID
-                )
-              ) {
-                acc.push(viewportData.viewportLabel);
-              }
-              return acc;
-            }, []);
+      const viewportIdentificator = [];
+
+      if (numPanes !== 1) {
+        viewports.forEach((viewportData) => {
+          if (
+            viewportData?.displaySetInstanceUIDs?.includes(
+              ds.displaySetInstanceUID
+            )
+          ) {
+            viewportIdentificator.push(viewportData.viewportLabel);
+          }
+        });
+      }
 
       const array =
         componentType === 'thumbnailTracked'
@@ -523,9 +516,8 @@ function _mapDisplaySets(
                 ],
                 onClose: () => uiDialogService.dismiss({ id: 'ds-reject-sr' }),
                 onShow: () => {
-                  const yesButton = document.querySelector(
-                    '.reject-yes-button'
-                  );
+                  const yesButton =
+                    document.querySelector('.reject-yes-button');
 
                   yesButton.focus();
                 },
@@ -616,10 +608,10 @@ function _createStudyBrowserTabs(
   const allStudies = [];
 
   // Iterate over each study...
-  studyDisplayList.forEach(study => {
+  studyDisplayList.forEach((study) => {
     // Find it's display sets
     const displaySetsForStudy = displaySets.filter(
-      ds => ds.StudyInstanceUID === study.studyInstanceUid
+      (ds) => ds.StudyInstanceUID === study.studyInstanceUid
     );
 
     // Sort them
