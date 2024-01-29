@@ -36,22 +36,22 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
   }
 
   const instanceMetadata: InstanceMetadata = {
-    CorrectedImage: dicomMetaData.CorrectedImage,
-    Units: dicomMetaData.Units,
+    CorrectedImage: dicomMetaData?.CorrectedImage,
+    Units: dicomMetaData?.Units,
     RadionuclideHalfLife:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife,
+      dicomMetaData?.RadiopharmaceuticalInformationSequence?.[0]?.RadionuclideHalfLife,
     RadionuclideTotalDose:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose,
+      dicomMetaData?.RadiopharmaceuticalInformationSequence?.[0]?.RadionuclideTotalDose,
     RadiopharmaceuticalStartDateTime:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartDateTime,
+      dicomMetaData?.RadiopharmaceuticalInformationSequence?.[0]?.RadiopharmaceuticalStartDateTime,
     RadiopharmaceuticalStartTime:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartTime,
-    DecayCorrection: dicomMetaData.DecayCorrection,
-    PatientWeight: dicomMetaData.PatientWeight,
-    SeriesDate: dicomMetaData.SeriesDate,
-    SeriesTime: dicomMetaData.SeriesTime,
-    AcquisitionDate: dicomMetaData.AcquisitionDate,
-    AcquisitionTime: dicomMetaData.AcquisitionTime,
+      dicomMetaData?.RadiopharmaceuticalInformationSequence?.[0]?.RadiopharmaceuticalStartTime,
+    DecayCorrection: dicomMetaData?.DecayCorrection,
+    PatientWeight: dicomMetaData?.PatientWeight,
+    SeriesDate: dicomMetaData?.SeriesDate,
+    SeriesTime: dicomMetaData?.SeriesTime,
+    AcquisitionDate: dicomMetaData?.AcquisitionDate,
+    AcquisitionTime: dicomMetaData?.AcquisitionTime,
   };
 
   if (
