@@ -11,21 +11,30 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
     throw new Error('dicom metadata are required');
   }
 
+  // if (
+  //   dicomMetaData.SeriesDate === undefined ||
+  //   dicomMetaData.SeriesTime === undefined ||
+  //   dicomMetaData.CorrectedImage === undefined ||
+  //   dicomMetaData.Units === undefined ||
+  //   !dicomMetaData.RadiopharmaceuticalInformationSequence ||
+  //   dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife === undefined ||
+  //   dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose === undefined ||
+  //   dicomMetaData.DecayCorrection === undefined ||
+  //   dicomMetaData.AcquisitionDate === undefined ||
+  //   dicomMetaData.AcquisitionTime === undefined ||
+  //   (dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartDateTime ===
+  //     undefined &&
+  //     dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartTime ===
+  //       undefined)
+  // ) {
+  //   throw new Error('required metadata are missing');
+  // }
+
   if (
     dicomMetaData.SeriesDate === undefined ||
     dicomMetaData.SeriesTime === undefined ||
-    dicomMetaData.CorrectedImage === undefined ||
-    dicomMetaData.Units === undefined ||
-    !dicomMetaData.RadiopharmaceuticalInformationSequence ||
-    dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife === undefined ||
-    dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose === undefined ||
-    dicomMetaData.DecayCorrection === undefined ||
     dicomMetaData.AcquisitionDate === undefined ||
-    dicomMetaData.AcquisitionTime === undefined ||
-    (dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartDateTime ===
-      undefined &&
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartTime ===
-        undefined)
+    dicomMetaData.AcquisitionTime === undefined
   ) {
     throw new Error('required metadata are missing');
   }
