@@ -98,7 +98,6 @@ const ThumbnailList = ({
                   onReject={onReject}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                   onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
-                  viewportIdentificator={viewportIdentificator}
                   bodyPartExamined={bodyPartExamined}
                   modality={modality}
                   isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}

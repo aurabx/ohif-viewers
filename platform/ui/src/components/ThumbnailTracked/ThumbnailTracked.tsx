@@ -58,9 +58,6 @@ const ThumbnailTracked = ({
                       {isTracked ? t('Series is tracked') : t('Series is untracked')}
                     </span>
                   </span>
-                  {!!viewportIdentificator.length && (
-                    <span>{`${t('Viewport')}: ${viewportIdentificatorLabel}`}</span>
-                  )}
                 </div>
               </div>
             }
@@ -98,7 +95,7 @@ const ThumbnailTracked = ({
       />
     </div>
   );
-}
+};
 
 ThumbnailTracked.propTypes = {
   /**

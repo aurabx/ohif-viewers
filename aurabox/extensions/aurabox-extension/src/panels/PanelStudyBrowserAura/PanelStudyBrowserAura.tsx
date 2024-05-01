@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+// @ts-ignore
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -19,7 +20,6 @@ const { sortStudyInstances, formatDate } = utils;
  * @param {*} param0
  */
 function PanelStudyBrowserAura({
-  measurementService,
   servicesManager,
   getImageSrc,
   getStudiesForPatientByMRN,
@@ -27,6 +27,7 @@ function PanelStudyBrowserAura({
   dataSource,
 }) {
   const {
+    measurementService,
     displaySetService,
     uiDialogService,
     hangingProtocolService,

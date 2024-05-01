@@ -314,18 +314,21 @@ function WorkList({
         },
         {
           key: 'instances',
-          content: (
-            <>
-              <Icon
-                name="group-layers"
-                className={classnames('mr-2 inline-flex w-4', {
-                  'text-primary-active': isExpanded,
-                  'text-secondary-light': !isExpanded,
-                })}
-              />
-              {instances}
-            </>
-          ),
+          content:
+            instances > 0 ? (
+              <>
+                <Icon
+                  name="group-layers"
+                  className={classnames('mr-2 inline-flex w-4', {
+                    'text-primary-active': isExpanded,
+                    'text-secondary-light': !isExpanded,
+                  })}
+                />
+                {instances}
+              </>
+            ) : (
+              <></>
+            ),
           title: (instances || 0).toString(),
           gridCol: 2,
         },

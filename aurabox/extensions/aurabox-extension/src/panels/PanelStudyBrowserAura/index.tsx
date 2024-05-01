@@ -12,7 +12,7 @@ const requestDisplaySetCreationForStudy = (
 ) => {
   if (
     DisplaySetService.activeDisplaySets.some(
-      displaySet => displaySet.StudyInstanceUID === StudyInstanceUID
+      (displaySet) => displaySet.StudyInstanceUID === StudyInstanceUID
     )
   ) {
     return;
@@ -26,9 +26,8 @@ function _getStudyForPatientUtility(extensionManager) {
     'aurabox-extension.utilityModule.common'
   );
 
-  console.log('here', utilityModule);
-
-  window.extensionManager = extensionManager;
+  //console.log('here', utilityModule);
+  //window.extensionManager = extensionManager;
 
   const { getStudiesForPatient } = utilityModule.exports;
   return getStudiesForPatient;
@@ -49,13 +48,10 @@ function WrappedPanelStudyBrowserAura({
   const dataSource = extensionManager.getActiveDataSource()[0];
   const getStudiesForPatient = _getStudyForPatientUtility(extensionManager);
   const _getStudiesForPatient = getStudiesForPatient.bind(null, dataSource);
-  const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(
-    extensionManager
-  );
-  const _requestDisplaySetCreationForStudy = requestDisplaySetCreationForStudy.bind(
-    null,
-    dataSource
-  );
+  const _getImageSrcFromImageId =
+    _createGetImageSrcFromImageIdFn(extensionManager);
+  const _requestDisplaySetCreationForStudy =
+    requestDisplaySetCreationForStudy.bind(null, dataSource);
 
   return (
     <PanelStudyBrowserAura

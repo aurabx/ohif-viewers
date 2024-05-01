@@ -483,9 +483,7 @@ function _mapDisplaySets(
       const { displaySetInstanceUID, images } = ds;
 
       const bodyPartExamined =
-        images && images.length > 0 && images[0].BodyPartExamined
-          ? images[0].BodyPartExamined
-          : '';
+        images && images.length > 0 && images[0].BodyPartExamined ? images[0].BodyPartExamined : '';
 
       const thumbnailProps = {
         displaySetInstanceUID,
@@ -506,7 +504,6 @@ function _mapDisplaySets(
         },
         isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
         isHydratedForDerivedDisplaySet: ds.isHydrated,
-        viewportIdentificator,
         bodyPartExamined,
       };
 

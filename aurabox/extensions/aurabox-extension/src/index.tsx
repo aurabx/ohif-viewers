@@ -94,32 +94,11 @@ const auraboxExtension: Types.Extensions.Extension = {
    * object of functions, definitions is an object of available commands, their
    * options, and defaultContext is the default context for the command to run against.
    */
-  getCommandsModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {
-    const actions = {
-      toggleStackImageSyncAura: ({ toggledState }) => {
-        toggleStackImageSyncAura({
-          servicesManager,
-          toggledState,
-        });
-      },
-    };
-
-    const definitions = {
-      toggleStackImageSyncAura: {
-        commandFn: actions.toggleStackImageSyncAura,
-      },
-    };
-
-    return {
-      actions,
-      definitions,
-      defaultContext: 'CORNERSTONE',
-    };
-  },
+  // getCommandsModule: ({
+  //   servicesManager,
+  //   commandsManager,
+  //   extensionManager,
+  // }) => {},
   /**
    * ContextModule should provide a list of context that will be available in OHIF
    * and will be provided to the Modes. A context is a state that is shared OHIF.
