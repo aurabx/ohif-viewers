@@ -1,4 +1,12 @@
-import React, { useCallback, useEffect, useState, createRef, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  createRef,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Typography from '../Typography';
@@ -25,20 +33,23 @@ const DEFAULT_FILENAME = 'image';
 
 const REFRESH_VIEWPORT_TIMEOUT = 100;
 
-const ViewportDownloadForm = ({
-  activeViewportElement,
-  onClose,
-  updateViewportPreview,
-  enableViewport,
-  disableViewport,
-  toggleAnnotations,
-  loadImage,
-  downloadBlob,
-  defaultSize,
-  minimumSize,
-  maximumSize,
-  canvasClass,
-}) => {
+const ViewportDownloadForm = (
+  {
+    activeViewportElement,
+    onClose,
+    updateViewportPreview,
+    enableViewport,
+    disableViewport,
+    toggleAnnotations,
+    loadImage,
+    downloadBlob,
+    defaultSize,
+    minimumSize,
+    maximumSize,
+    canvasClass,
+  },
+  ref
+) => {
   const { t } = useTranslation('Modals');
 
   const [filename, setFilename] = useState(DEFAULT_FILENAME);
@@ -216,6 +227,12 @@ const ViewportDownloadForm = ({
     downloadCanvas.ref,
     fileType,
   ]);
+
+  useImperativeHandle(ref, () => ({
+    async reload() {
+      await loadAndUpdateViewports();
+    },
+  }));
 
   useEffect(() => {
     enableViewport(viewportElement);
@@ -406,5 +423,4 @@ const ViewportDownloadForm = ({
     </div>
   );
 };
-
-export default ViewportDownloadForm;
+export default forwardRef(ViewportDownloadForm);

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import html2canvas from 'html2canvas';
 import {
   Enums,
@@ -26,6 +26,7 @@ const CornerstoneViewportDownloadForm = ({
   const enabledElement = OHIFgetEnabledElement(activeViewportIdProp);
   const activeViewportElement = enabledElement?.element;
   const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
+  const downloadForm = useRef<{ reload: () => void }>();
 
   const {
     viewportId: activeViewportId,
@@ -72,6 +73,14 @@ const CornerstoneViewportDownloadForm = ({
       };
 
       renderingEngine.enableElement(viewportInput);
+
+      const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
+      downloadViewport.setCamera(viewport.getCamera());
+      downloadViewport.render();
+
+      if (downloadForm.current) {
+        downloadForm.current.reload();
+      }
     }
   };
 
@@ -240,6 +249,7 @@ const CornerstoneViewportDownloadForm = ({
       loadImage={loadImage}
       toggleAnnotations={toggleAnnotations}
       downloadBlob={downloadBlob}
+      ref={downloadForm}
     />
   );
 };
