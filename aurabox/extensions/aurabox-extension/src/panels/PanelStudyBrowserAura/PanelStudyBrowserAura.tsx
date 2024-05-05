@@ -11,6 +11,7 @@ import {
   ButtonEnums,
 } from '@ohif/ui';
 import { useTrackedMeasurements } from '@ohif/extension-measurement-tracking/src/getContextModule';
+import moment from 'moment';
 
 const { sortStudyInstances, formatDate } = utils;
 
@@ -680,10 +681,14 @@ function _createStudyBrowserTabs(
       return -1;
     }
 
-    const dateA = Date.parse(a);
-    const dateB = Date.parse(b);
+    const dateA = moment(a, 'DD-MMM-YYYY');
+    const dateB = moment(b, 'DD-MMM-YYYY');
 
-    return dateB - dateA;
+    if (!dateA.isValid()) {
+      return 1;
+    }
+
+    return dateB.isAfter(dateA) ? 1 : -1;
   };
 
   const tabs = [
