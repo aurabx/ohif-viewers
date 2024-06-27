@@ -1,4 +1,4 @@
-import hpMNGrid from '@ohif/extension-default/src/hpMNGrid';
+import hpMNGrid from '@ohif/extension-default/src/hangingprotocols/hpMNGrid';
 
 const auraDefault = {
   id: 'auraDefault',
