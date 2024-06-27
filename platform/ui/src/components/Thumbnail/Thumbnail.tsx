@@ -19,7 +19,7 @@ const Thumbnail = ({
   numInstances,
   countIcon,
   messages,
-  dragData,
+  dragData = {},
   isActive,
   onClick,
   onDoubleClick,
@@ -132,10 +132,6 @@ Thumbnail.propTypes = {
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
-};
-
-Thumbnail.defaultProps = {
-  dragData: {},
 };
 
 export default Thumbnail;
