@@ -26,7 +26,6 @@ function _getStudyForPatientUtility(extensionManager) {
     'aurabox-extension.utilityModule.common'
   );
 
-  //console.log('here', utilityModule);
   //window.extensionManager = extensionManager;
 
   const { getStudiesForPatient } = utilityModule.exports;

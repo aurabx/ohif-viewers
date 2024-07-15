@@ -1,15 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import {
-  StudyBrowser,
-  useImageViewer,
-  useViewportGrid,
-  Dialog,
-  ButtonEnums,
-} from '@ohif/ui';
+import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { useTrackedMeasurements } from '@ohif/extension-measurement-tracking/src/getContextModule';
 import moment from 'moment';
 
@@ -41,8 +35,10 @@ function PanelStudyBrowserAura({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
+  // @ts-ignore
   const [{ activeViewportId, viewports }, viewportGridService] =
     useViewportGrid();
+  // @ts-ignore
   const [trackedMeasurements, sendTrackedMeasurementsEvent] =
     useTrackedMeasurements();
   const [activeTabName, setActiveTabName] = useState('primary');
@@ -87,6 +83,7 @@ function PanelStudyBrowserAura({
     async function fetchStudiesForPatient(StudyInstanceUID) {
       // current study qido
       const qidoForStudyUID = await dataSource.query.studies.search({
+        // disable so miss matched patient id's don't break things
         studyInstanceUid: StudyInstanceUID,
       });
 
@@ -100,8 +97,9 @@ function PanelStudyBrowserAura({
       // try to fetch the prior studies based on the patientID if the
       // server can respond.
       try {
-        qidoStudiesForPatient =
-          await getStudiesForPatientByMRN(qidoForStudyUID);
+        qidoStudiesForPatient = await getStudiesForPatientByMRN(
+          qidoForStudyUID
+        );
       } catch (error) {
         console.warn(error);
       }
@@ -509,80 +507,7 @@ function _mapDisplaySets(
       };
 
       if (componentType === 'thumbnailNoImage') {
-        if (dataSource.reject && dataSource.reject.series) {
-          thumbnailProps.canReject = !ds?.unsupported;
-          thumbnailProps.onReject = () => {
-            uiDialogService.create({
-              id: 'ds-reject-sr',
-              centralize: true,
-              isDraggable: false,
-              showOverlay: true,
-              content: Dialog,
-              contentProps: {
-                title: 'Delete Report',
-                body: () => (
-                  <div className="bg-primary-dark p-4 text-white">
-                    <p>Are you sure you want to delete this report?</p>
-                    <p className="mt-2">This action cannot be undone.</p>
-                  </div>
-                ),
-                actions: [
-                  {
-                    id: 'cancel',
-                    text: 'Cancel',
-                    type: ButtonEnums.type.secondary,
-                  },
-                  {
-                    id: 'yes',
-                    text: 'Yes',
-                    type: ButtonEnums.type.primary,
-                    classes: ['reject-yes-button'],
-                  },
-                ],
-                onClose: () => uiDialogService.dismiss({ id: 'ds-reject-sr' }),
-                onShow: () => {
-                  const yesButton =
-                    document.querySelector('.reject-yes-button');
-
-                  yesButton.focus();
-                },
-                onSubmit: async ({ action }) => {
-                  switch (action.id) {
-                    case 'yes':
-                      try {
-                        await dataSource.reject.series(
-                          ds.StudyInstanceUID,
-                          ds.SeriesInstanceUID
-                        );
-                        displaySetService.deleteDisplaySet(
-                          displaySetInstanceUID
-                        );
-                        uiDialogService.dismiss({ id: 'ds-reject-sr' });
-                        uiNotificationService.show({
-                          title: 'Delete Report',
-                          message: 'Report deleted successfully',
-                          type: 'success',
-                        });
-                      } catch (error) {
-                        uiDialogService.dismiss({ id: 'ds-reject-sr' });
-                        uiNotificationService.show({
-                          title: 'Delete Report',
-                          message: 'Failed to delete report',
-                          type: 'error',
-                        });
-                      }
-                      break;
-                    case 'cancel':
-                      uiDialogService.dismiss({ id: 'ds-reject-sr' });
-                      break;
-                  }
-                },
-              },
-            });
-          };
-        } else {
-          thumbnailProps.canReject = false;
-        }
+        thumbnailProps.canReject = false;
       }
 
       array.push(thumbnailProps);
@@ -678,11 +603,12 @@ function _createStudyBrowserTabs(
   // Newest first
   const _byDate = (a, b) => {
     if (b.modality === 'DOC') {
-      return -1;
+      // return -1;
+      return 1;
     }
 
-    const dateA = moment(a, 'DD-MMM-YYYY');
-    const dateB = moment(b, 'DD-MMM-YYYY');
+    const dateA = moment(a.date, 'DD-MMM-YYYY');
+    const dateB = moment(b.date, 'DD-MMM-YYYY');
 
     if (!dateA.isValid()) {
       return 1;
@@ -691,31 +617,23 @@ function _createStudyBrowserTabs(
     return dateB.isAfter(dateA) ? 1 : -1;
   };
 
-  const tabs = [
+  return [
     {
       name: 'primary',
       label: 'Primary',
-      studies: primaryStudies.sort((studyA, studyB) =>
-        _byDate(studyA.date, studyB.date)
-      ),
+      studies: primaryStudies.sort((studyA, studyB) => _byDate(studyA, studyB)),
     },
     {
       name: 'recent',
       label: 'Recent',
-      studies: recentStudies.sort((studyA, studyB) =>
-        _byDate(studyA.date, studyB.date)
-      ),
+      studies: recentStudies.sort((studyA, studyB) => _byDate(studyA, studyB)),
     },
     {
       name: 'all',
       label: 'All',
-      studies: allStudies.sort((studyA, studyB) =>
-        _byDate(studyA.date, studyB.date)
-      ),
+      studies: allStudies.sort((studyA, studyB) => _byDate(studyA, studyB)),
     },
   ];
-
-  return tabs;
 }
 
 function _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs) {

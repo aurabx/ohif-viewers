@@ -43,9 +43,15 @@ export default function sortInstances(instances: Array<any>) {
   );
 
   const distanceInstancePairs = instances.map(instance => {
-    const imagePositionPatient = instance.ImagePositionPatient;
+    let imagePositionPatient = instance.ImagePositionPatient;
+
+    if(typeof imagePositionPatient === 'undefined'){
+      imagePositionPatient = [0,0,0]
+    }
 
     const positionVector = vec3.create();
+
+
 
     vec3.sub(positionVector, referenceImagePositionPatient, imagePositionPatient);
 

@@ -20,21 +20,12 @@ window.config = {
       sourceName: 'dicomweb-aura',
       configuration: {
         name: 'Aurabox DICOMWeb',
-        // wadoUriRoot: 'https://uhura-qb5zrxv3jq-ts.a.run.app/wado-rs',
-        // qidoRoot: 'https://uhura-qb5zrxv3jq-ts.a.run.app/wado-rs',
-        // wadoRoot: 'https://uhura-qb5zrxv3jq-ts.a.run.app/wado-rs',
-        // wadoUriRoot:
-        //   'https://pr-190-pcovu3i-pghszvpk65pns.au.platformsh.site/api/wado-rs',
-        // qidoRoot:
-        //   'https://pr-190-pcovu3i-pghszvpk65pns.au.platformsh.site/api/wado-rs',
-        // wadoRoot:
-        //   'https://pr-190-pcovu3i-pghszvpk65pns.au.platformsh.site/api/wado-rs',
-        // wadoUriRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/wado-rs',
-        // qidoRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/wado-rs',
-        // wadoRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/wado-rs',
-        wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
+        wadoUriRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/v2/wado-rs',
+        qidoRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/v2/wado-rs',
+        wadoRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/v2/wado-rs',
+        // wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
+        // qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
+        // wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         // wadoUriRoot: 'https://uhura.lndo.site/wado-rs',
         // qidoRoot: 'https://uhura.lndo.site/wado-rs',
         // wadoRoot: 'https://uhura.lndo.site/wado-rs',
@@ -104,10 +95,10 @@ window.config = {
     },
   ],
 
-  // headers: {
-  //   Authorization:
-  //     'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1cmEubG5kby5zaXRlIiwiYXVkIjoiaHR0cHM6Ly9hdXJhLmxuZG8uc2l0ZSIsInN1YiI6ImEzMzVjOWRiLTQ0YTEtNDcyMi04ZDc5LTJiMzVjY2Q0ZGViZCIsInBlcnNvbiI6ImU5NDliNjIwLTBmY2EtNGUyMS1iMmM3LTg1OWYyZjhkMWExNyIsInN0b3JlX2lkIjoiMjNhYzE1MGMtOGU5My00YmM4LTk5NmItZTFiYTlhNmU4YWRmIiwiaWF0IjoxNjc0NjEyNjkyLCJuYmYiOjE2NzQ2MTI2OTIsImV4cCI6MTY3NDY5OTA5Mn0.LCPvwldLYj4siTvK_VFyzpUY3PUoIbJ3BCSd8wiy4ymceuewt4np_eaC_23l3jRRPhSH3rWMoBviIATzcmaVkDzxs7SXZIbe0wK4n97Kpmuqjd223wQ6E7Da8q5h9g1_zD5ZKfuH7ahvpofXL8OPjqKGWeVdDzWMPrqaW0ZMz1xAwkzi892ADNq3g9_TNDvlCFnfqkiMklspodQ9hSeU0gsgJCqFtHuIqV5NPPYbi74Bmp4aI5R5x_IFiRK7yTGk151F0azt7Aj_kxO7mEHWvNpe_dbLhYRiMUqQ2VoFSrxdLqI86GvcsLRjhGIKmPEDYFONqMeh_1M4ALElP1xepQ',
-  // },
+  headers: {
+    Authorization: 'Bearer',
+  },
+
 
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.

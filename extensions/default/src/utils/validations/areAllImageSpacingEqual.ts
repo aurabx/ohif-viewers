@@ -33,7 +33,11 @@ export default function areAllImageSpacingEqual(
   const issuesFound = [];
   for (let i = 1; i < instances.length; i++) {
     const instance = instances[i];
-    const imagePositionPatient = toNumber(instance.ImagePositionPatient);
+    let imagePositionPatient = toNumber(instance.ImagePositionPatient);
+
+    if(typeof imagePositionPatient === 'undefined') {
+      imagePositionPatient = [0,0,0]
+    }
 
     const spacingBetweenFrames = _getPerpendicularDistance(
       imagePositionPatient,

@@ -19,12 +19,19 @@ function _checkSeriesPositionShift(
 ) {
   // predicted position should be the previous position added by the multiplication
   // of the scanAxisNormal and the average spacing between frames
-  const predictedPosition = vec3.scaleAndAdd(
+  let predictedPosition = vec3.scaleAndAdd(
     vec3.create(),
     previousPosition,
     scanAxisNormal,
     averageSpacingBetweenFrames
   );
+
+  if(typeof actualPosition === 'undefined') {
+    actualPosition = [0,0,0]
+  }
+
+
+
   return vec3.distance(actualPosition, predictedPosition) > averageSpacingBetweenFrames;
 }
 

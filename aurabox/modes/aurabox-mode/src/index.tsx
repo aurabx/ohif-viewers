@@ -117,8 +117,6 @@ function modeFactory({ modeConfiguration }) {
         this.labelConfig
       );
 
-      console.log('toolbarButtons', toolbarButtons);
-
       toolbarService.addButtons([...toolbarButtons, ...moreTools]);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
@@ -208,8 +206,8 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [tracked.thumbnailList],
-              // leftPanels: [aura.thumbnailList],
+              // leftPanels: [tracked.thumbnailList],
+              leftPanels: [aura.thumbnailList],
               rightPanels: [],
               // rightPanels: [dicomSeg.panel, tracked.measurements],
               rightPanelDefaultClosed: true,
