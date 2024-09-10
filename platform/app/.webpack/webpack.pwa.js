@@ -35,6 +35,8 @@ const setHeaders = (res, path) => {
   }
   if (path.indexOf('.pdf') !== -1) {
     res.setHeader('Content-Type', 'application/pdf');
+  } else if (path.indexOf('mp4') !== -1) {
+    res.setHeader('Content-Type', 'video/mp4');
   } else if (path.indexOf('frames') !== -1) {
     res.setHeader('Content-Type', 'multipart/related');
   } else {
@@ -108,16 +110,17 @@ module.exports = (env, argv) => {
             to: `${DIST_DIR}/app-config.js`,
           },
           // Copy Dicom Microscopy Viewer build files
-          {
-            from: '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
-            to: DIST_DIR,
-            globOptions: {
-              ignore: ['**/*.min.js.map'],
-            },
-            // The dicom-microscopy-viewer is optional, so if it doeesn't get
-            // installed, it shouldn't cause issues.
-            noErrorOnMissing: true,
-          },
+          // This is in pluginCOnfig.json now
+          // {
+          //   from: '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
+          //   to: DIST_DIR,
+          //   globOptions: {
+          //     ignore: ['**/*.min.js.map'],
+          //   },
+          //   // The dicom-microscopy-viewer is optional, so if it doeesn't get
+          //   // installed, it shouldn't cause issues.
+          //   noErrorOnMissing: true,
+          // },
           // Copy dicom-image-loader build files
           {
             from: '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',

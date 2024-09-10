@@ -389,6 +389,7 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.CINE_MODULE:
         metadata = {
           frameTime: instance.FrameTime,
+          numberOfFrames: instance.NumberOfFrames ? Number(instance.NumberOfFrames) : 1,
         };
 
         break;
@@ -561,7 +562,9 @@ const WADO_IMAGE_LOADER = {
       columns: toNumber(instance.Columns),
       imageOrientationPatient: toNumber(ImageOrientationPatient),
       rowCosines: toNumber(rowCosines || [0, 1, 0]),
+      isDefaultValueSetForRowCosine: toNumber(rowCosines) ? false : true,
       columnCosines: toNumber(columnCosines || [0, 0, -1]),
+      isDefaultValueSetForColumnCosine: toNumber(columnCosines) ? false : true,
       imagePositionPatient: toNumber(instance.ImagePositionPatient || [0, 0, 0]),
       sliceThickness: toNumber(instance.SliceThickness),
       sliceLocation: toNumber(instance.SliceLocation),

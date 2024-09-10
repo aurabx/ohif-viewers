@@ -39,9 +39,11 @@ import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
+import { getSopClassHandlerModule } from './getSopClassHandlerModule';
 
 const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
 const { getDynamicVolumeInfo } = volumeLoaderHelpers ?? {};
+const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport');
@@ -53,6 +55,15 @@ const OHIFCornerstoneViewport = props => {
       <Component {...props} />
     </React.Suspense>
   );
+};
+
+const stackRetrieveOptions = {
+  retrieveOptions: {
+    single: {
+      streaming: true,
+      decodeLevel: 1,
+    },
+  },
 };
 
 /**
@@ -80,6 +91,21 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     toolbarService.registerEventForToolbarUpdate(cornerstone.eventTarget, [
       cornerstoneTools.Enums.Events.TOOL_ACTIVATED,
     ]);
+
+    // Configure the interleaved/HTJ2K loader
+    imageRetrieveMetadataProvider.clear();
+    // The default volume interleaved options are to interleave the
+    // image retrieve, but don't perform progressive loading per image
+    // This interleaves images and replicates them for low-resolution depth volume
+    // reconstruction, which progressively improves
+    imageRetrieveMetadataProvider.add(
+      'volume',
+      cornerstone.ProgressiveRetrieveImages.interleavedRetrieveStages
+    );
+    // The default stack loading option is to progressive load HTJ2K images
+    // There are other possible options, but these need more thought about
+    // how to define them.
+    imageRetrieveMetadataProvider.add('stack', stackRetrieveOptions);
   },
 
   onModeExit: ({ servicesManager }: withAppTypes): void => {
@@ -193,6 +219,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       },
     ];
   },
+  getSopClassHandlerModule,
 };
 
 export type { PublicViewportOptions };
@@ -206,5 +233,6 @@ export {
   getEnabledElement,
   ImageOverlayViewerTool,
   getSOPInstanceAttributes,
+  dicomLoaderService,
 };
 export default cornerstoneExtension;

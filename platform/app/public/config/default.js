@@ -60,6 +60,7 @@ window.config = {
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',
+          transform: url => url.replace('/pixeldata.mp4', '/rendered'),
         },
         omitQuotationForMultipartRequest: true,
       },

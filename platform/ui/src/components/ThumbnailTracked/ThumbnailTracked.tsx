@@ -16,6 +16,7 @@ const ThumbnailTracked = ({
   description,
   seriesNumber,
   numInstances,
+  loadingProgress,
   countIcon,
   messages,
   dragData,
@@ -87,6 +88,7 @@ const ThumbnailTracked = ({
         messages={messages}
         numInstances={numInstances}
         countIcon={countIcon}
+        loadingProgress={loadingProgress}
         isActive={isActive}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
@@ -116,6 +118,7 @@ ThumbnailTracked.propTypes = {
   description: PropTypes.string.isRequired,
   seriesNumber: StringNumber.isRequired,
   numInstances: PropTypes.number.isRequired,
+  loadingProgress: PropTypes.number,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
