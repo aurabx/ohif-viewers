@@ -22,6 +22,15 @@ const dicomPDFExtension = {
    * Only required property. Should be a unique value across all extensions.
    */
   id,
+
+
+  token: '',
+
+  async preRegistration({ servicesManager, appConfig, configuration }) {
+
+    let bearer = appConfig?.headers?.Authorization ?? '';
+    this.token = bearer.replace('Bearer ', '')
+  },
   /**
    *
    *
@@ -34,6 +43,7 @@ const dicomPDFExtension = {
         <OHIFCornerstonePdfViewport
           servicesManager={servicesManager}
           extensionManager={extensionManager}
+          token={this.token}
           {...props}
         />
       );

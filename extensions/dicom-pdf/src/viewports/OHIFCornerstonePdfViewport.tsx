@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import './OHIFCornerstonePdfViewport.css';
 
-function OHIFCornerstonePdfViewport({ displaySets }) {
+function OHIFCornerstonePdfViewport({ displaySets, token }) {
   const [url, setUrl] = useState(null);
 
   useEffect(() => {
@@ -32,7 +32,9 @@ function OHIFCornerstonePdfViewport({ displaySets }) {
 
   useEffect(() => {
     const load = async () => {
-      setUrl(await pdfUrl);
+      let pdfUrlAuthed = await pdfUrl;
+      pdfUrlAuthed += '&token=' + token
+      setUrl(pdfUrlAuthed);
     };
 
     load();
