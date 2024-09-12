@@ -58,6 +58,21 @@ const getDirectURL = (config, params) => {
       return undefined;
     }
   }
+  //
+  // console.log(
+  //   'createRenderedRetrieve',
+  //   config,
+  //   params,
+  //   instance[tag],
+  //   params.instance[tag]?.BulkDataURI,
+  //   createRenderedRetrieve(config, params),
+  //   getBulkdataValue(config, params)
+  // );
+  // console.log('instance', fetchPart, singlepart, getBulkdataValue(config, params));
+
+  if (fetchPart === 'pdf') {
+    return getBulkdataValue(config, params);
+  }
 
   return createRenderedRetrieve(config, params) || getBulkdataValue(config, params);
 };

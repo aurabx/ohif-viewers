@@ -33,7 +33,7 @@ function OHIFCornerstonePdfViewport({ displaySets, token }) {
   useEffect(() => {
     const load = async () => {
       let pdfUrlAuthed = await pdfUrl;
-      pdfUrlAuthed += '&token=' + token
+      pdfUrlAuthed += pdfUrlAuthed.includes('?') ? '&token=' + token : '?token=' + token;
       setUrl(pdfUrlAuthed);
     };
 
