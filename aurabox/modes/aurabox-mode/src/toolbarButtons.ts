@@ -2,7 +2,6 @@
 // Only ways that you can pass in a custom React component for render :l
 import { ToolbarService } from '@ohif/core';
 import type { Button } from '@ohif/core/types';
-import { EVENTS } from '@cornerstonejs/core';
 
 const { createButton } = ToolbarService;
 
@@ -20,8 +19,7 @@ const toolbarButtons: Button[] = [
     props: {
       groupId: 'MeasurementTools',
       // group evaluate to determine which item should move to the top
-      evaluate:
-        'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
+      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
       primary: createButton({
         id: 'Length',
         icon: 'tool-length',
@@ -128,7 +126,13 @@ const toolbarButtons: Button[] = [
       icon: 'tool-window-level',
       label: 'Window Level',
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: [
+        'evaluate.cornerstoneTool',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['wholeSlide'],
+        },
+      ],
     },
   },
   // Pan...
@@ -164,7 +168,13 @@ const toolbarButtons: Button[] = [
       icon: 'tool-capture',
       label: 'Capture',
       commands: 'showDownloadViewportModal',
-      evaluate: 'evaluate.action',
+      evaluate: [
+        'evaluate.action',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video', 'wholeSlide'],
+        },
+      ],
     },
   },
   {
@@ -191,7 +201,7 @@ const toolbarButtons: Button[] = [
       },
       evaluate: {
         name: 'evaluate.cornerstoneTool',
-        disabledText: 'Select an MPR viewport to enable this tool ...',
+        disabledText: 'Select an MPR viewport to enable this tool',
       },
     },
   },

@@ -20,15 +20,19 @@ window.config = {
       sourceName: 'dicomweb-aura',
       configuration: {
         name: 'Aurabox DICOMWeb',
-        wadoUriRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/v2/wado-rs',
-        qidoRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/v2/wado-rs',
-        wadoRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/v2/wado-rs',
+        // wadoUriRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/v2/wado-rs',
+        // qidoRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/v2/wado-rs',
+        // wadoRoot: 'https://uhura-nfnewhtcta-ts.a.run.app/v2/wado-rs',
         // wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         // qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         // wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         // wadoUriRoot: 'https://uhura.lndo.site/wado-rs',
         // qidoRoot: 'https://uhura.lndo.site/wado-rs',
         // wadoRoot: 'https://uhura.lndo.site/wado-rs',
+
+        wadoUriRoot: 'https://uhura-prod-uk.abxlink.com/v2/wado-rs',
+        qidoRoot: 'https://uhura-prod-uk.abxlink.com/v2/wado-rs',
+        wadoRoot: 'https://uhura-prod-uk.abxlink.com/v2/wado-rs',
         qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadors',
@@ -38,6 +42,34 @@ window.config = {
         supportsWildcard: false,
         staticWado: true,
         singlepart: 'bulkdata,video,pdf',
+      },
+    },
+    {
+      friendlyName: 'Aurabox DICOMWeb Server',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb-uk',
+      configuration: {
+        name: 'Aurabox DICOMWeb',
+        wadoUriRoot: 'https://uhura-prod-uk.abxlink.com/v2/wado-rs',
+        qidoRoot: 'https://uhura-prod-uk.abxlink.com/v2/wado-rs',
+        wadoRoot: 'https://uhura-prod-uk.abxlink.com/v2/wado-rs',
+        qidoSupportsIncludeField: false,
+        supportsReject: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
+        supportsWildcard: true,
+        staticWado: true,
+        singlepart: 'bulkdata,video,pdf',
+        showWarningMessageForCrossOrigin: true,
+        omitQuotationForMultipartRequest: false,
+        requestTransferSyntaxUID: '*',
+
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+        },
       },
     },
     {
@@ -96,9 +128,9 @@ window.config = {
   ],
 
   headers: {
-    Authorization: 'Bearer',
+    Authorization:
+      'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1ay5hdXJhYm94LmFwcCIsImF1ZCI6InVrLmF1cmFib3guYXBwIiwic3ViIjoiMjdjZTY0MWYtMTdhOC00YmM4LWFkODEtOGMyYmFjZmU5NDgxIiwia2V5IjoiJDJ5JDEwJHBPL0FLS2tSSWNwVXUyT0JiOGNtbk9zbWgudHZ3bC9JTDlVeGhUWWxFOHRRY21SN1dQSkxtIiwiZW5kcG9pbnQiOiJodHRwczovL3VrLmF1cmFib3guYXBwL2FwaSIsImlhdCI6MTczMjU4ODIwMSwibmJmIjoxNzMyNTg4MjAxLCJleHAiOjE3MzI1OTE4MDEsInN0b3JlX2lkIjoiIiwicGVyc29uX2lkIjoiOWQ4YjcxNGQtZGI3Ni00ZGQ5LTk0NWQtYTE0M2I4ZmVmMmE5In0.UH8bbnBWX-r_6Qx7F4-Jh0swZfpusMC7BUj47cJfbm5hz10SKIQyl3A6hZdzYhbtL7Sk1AdomOUM0aSSCT2-A1NjSnZPG7eROV6fC-iiTiQizm4lrPX9l_yu3QOHYqn-MVyDjnUJw8QB-691JXx2D48k7bXmn0RsC_VaUCbeAJoccwpWft5TO4yrJwSG-CpCev66YfMWWy2reQSveQpZJLGYSlw3gIUkZv4si2kW5eJIXaw56vcIBXIrqA07xVh7yBuNk-v6jv3i_I-p46eApAI3pM97GxREfyCChomJ2ZH2Z1xicx-e3DAunBZRBOG0Pj0MLo0GSij9Aif_Km24yQ',
   },
-
 
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.
@@ -126,7 +158,8 @@ window.config = {
   //       ))
   //   },
   // },
-  defaultDataSourceName: 'dicomweb',
+  // defaultDataSourceName: 'dicomweb-aura',
+  defaultDataSourceName: 'dicomweb-uk',
   hotkeys: [
     {
       commandName: 'incrementActiveViewport',
