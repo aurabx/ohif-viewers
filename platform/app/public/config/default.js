@@ -2,6 +2,7 @@
 
 window.config = {
   // routerBasename: '/viewers/v3',
+  name: 'config/default.js',
   routerBasename: '/',
   // whiteLabeling: {},
   extensions: [],
