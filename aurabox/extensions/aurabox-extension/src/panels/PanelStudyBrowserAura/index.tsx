@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 //
 import PanelStudyBrowserAura from './PanelStudyBrowserAura';
 import getImageSrcFromImageId from './getImageSrcFromImageId';
+import PanelStudyBrowserTracking from '@ohif/extension-measurement-tracking/src/panels/PanelStudyBrowserTracking/PanelStudyBrowserTracking';
 
 const requestDisplaySetCreationForStudy = (
   dataSource,
@@ -45,19 +46,27 @@ function WrappedPanelStudyBrowserAura({
   servicesManager,
 }) {
   const dataSource = extensionManager.getActiveDataSource()[0];
-  const getStudiesForPatient = _getStudyForPatientUtility(extensionManager);
-  const _getStudiesForPatient = getStudiesForPatient.bind(null, dataSource);
-  const _getImageSrcFromImageId =
-    _createGetImageSrcFromImageIdFn(extensionManager);
+
+  const getStudiesForPatientByMRN =
+    _getStudyForPatientUtility(extensionManager);
+  const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(
+    null,
+    dataSource
+  );
+  const _getImageSrcFromImageId = useCallback(
+    _createGetImageSrcFromImageIdFn(extensionManager),
+    []
+  );
   const _requestDisplaySetCreationForStudy =
     requestDisplaySetCreationForStudy.bind(null, dataSource);
 
   return (
     <PanelStudyBrowserAura
       servicesManager={servicesManager}
+      commandsManager={commandsManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
-      getStudiesForPatientByMRN={_getStudiesForPatient}
+      getStudiesForPatientByMRN={_getStudiesForPatientByMRN}
       requestDisplaySetCreationForStudy={_requestDisplaySetCreationForStudy}
     />
   );

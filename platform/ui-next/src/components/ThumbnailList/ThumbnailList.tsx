@@ -35,6 +35,7 @@ const ThumbnailList = ({
             componentType,
             countIcon,
             isTracked,
+            bodyPartExamined,
             canReject,
             onReject,
             imageSrc,
@@ -62,6 +63,7 @@ const ThumbnailList = ({
                 onClick={() => onThumbnailClick(displaySetInstanceUID)}
                 onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
                 isTracked={isTracked}
+                bodyPartExamined={bodyPartExamined}
                 loadingProgress={loadingProgress}
                 onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
                 isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}

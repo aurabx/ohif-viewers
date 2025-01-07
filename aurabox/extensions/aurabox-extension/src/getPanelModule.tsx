@@ -17,12 +17,14 @@ function getPanelModule({
       iconName: 'group-layers',
       iconLabel: 'Studies',
       label: 'Studies',
-      component: () =>
-        PanelStudyBrowserAura({
-          commandsManager,
-          extensionManager,
-          servicesManager,
-        }),
+      component: (props) => (
+        <PanelStudyBrowserAura
+          {...props}
+          commandsManager={commandsManager}
+          extensionManager={extensionManager}
+          servicesManager={servicesManager}
+        />
+      ),
     },
   ];
 }

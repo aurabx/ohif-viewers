@@ -132,6 +132,7 @@ StudyBrowser.propTypes = {
                *
                * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
                */
+              bodyPartExamined: PropTypes.string,
               dragData: PropTypes.shape({
                 /** Must match the "type" a dropTarget expects */
                 type: PropTypes.string.isRequired,

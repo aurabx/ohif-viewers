@@ -1,33 +1,60 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
-import { useTrackedMeasurements } from '@ohif/extension-measurement-tracking/src/getContextModule';
-import moment from 'moment';
+import { useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
+import { StudyBrowser } from '@ohif/ui-next';
 
-const { sortStudyInstances, formatDate } = utils;
+import { Separator } from '@ohif/ui-next';
+import { PanelStudyBrowserHeader } from '@ohif/extension-default';
+import { useAppConfig } from '@state';
+import {
+  defaultActionIcons,
+  defaultViewPresets,
+} from '@ohif/extension-measurement-tracking/src/panels/PanelStudyBrowserTracking/constants';
 
+const { formatDate, createStudyBrowserTabs } = utils;
+const thumbnailNoImageModalities = [
+  'SR',
+  'SEG',
+  'SM',
+  'RTSTRUCT',
+  'RTPLAN',
+  'RTDOSE',
+  'DOC',
+  'OT',
+  'PMAP',
+];
 /**
  *
  * @param {*} param0
  */
-function PanelStudyBrowserAura({
-  measurementService,
+export default function PanelStudyBrowserAura({
   servicesManager,
   getImageSrc,
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-}) {
+  commandsManager,
+}: withAppTypes) {
   const {
     displaySetService,
     uiDialogService,
     hangingProtocolService,
     uiNotificationService,
+    studyPrefetcherService,
+    customizationService,
   } = servicesManager.services;
+
   const navigate = useNavigate();
+  const { mode: studyMode } = customizationService.getCustomization(
+    'PanelStudyBrowser.studyMode',
+    {
+      id: 'default',
+      mode: 'all',
+    }
+  );
 
   const { t } = useTranslation('Common');
 
@@ -35,20 +62,45 @@ function PanelStudyBrowserAura({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
-  // @ts-ignore
-  const [{ activeViewportId, viewports }, viewportGridService] =
-    useViewportGrid();
-  // @ts-ignore
-  const [trackedMeasurements, sendTrackedMeasurementsEvent] =
-    useTrackedMeasurements();
-  const [activeTabName, setActiveTabName] = useState('primary');
+  const [
+    { activeViewportId, viewports, isHangingProtocolLayout },
+    viewportGridService,
+  ] = useViewportGrid();
+
+  const [activeTabName, setActiveTabName] = useState(studyMode);
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
   ]);
   const [studyDisplayList, setStudyDisplayList] = useState([]);
+  const [hasLoadedViewports, setHasLoadedViewports] = useState(false);
   const [displaySets, setDisplaySets] = useState([]);
+  const [displaySetsLoadingState, setDisplaySetsLoadingState] = useState({});
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
+
+  const [viewPresets, setViewPresets] = useState(
+    customizationService.getCustomization('studyBrowser.viewPresets')?.value ||
+      defaultViewPresets
+  );
+
+  const [actionIcons, setActionIcons] = useState(defaultActionIcons);
+
+  const updateActionIconValue = (actionIcon) => {
+    actionIcon.value = !actionIcon.value;
+    const newActionIcons = [...actionIcons];
+    setActionIcons(newActionIcons);
+  };
+
+  const updateViewPresetValue = (viewPreset) => {
+    if (!viewPreset) {
+      return;
+    }
+    const newViewPresets = viewPresets.map((preset) => {
+      preset.selected = preset.id === viewPreset.id;
+      return preset;
+    });
+    setViewPresets(newViewPresets);
+  };
 
   const onDoubleClickThumbnailHandler = (displaySetInstanceUID) => {
     let updatedViewports = [];
@@ -56,7 +108,8 @@ function PanelStudyBrowserAura({
     try {
       updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
         viewportId,
-        displaySetInstanceUID
+        displaySetInstanceUID,
+        isHangingProtocolLayout
       );
     } catch (error) {
       console.warn(error);
@@ -64,7 +117,7 @@ function PanelStudyBrowserAura({
         title: 'Thumbnail Double Click',
         message:
           'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
-        type: 'info',
+        type: 'error',
         duration: 3000,
       });
     }
@@ -75,7 +128,9 @@ function PanelStudyBrowserAura({
   const activeViewportDisplaySetInstanceUIDs =
     viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
-  const { trackedSeries } = trackedMeasurements.context;
+  useEffect(() => {
+    setActiveTabName(studyMode);
+  }, [studyMode]);
 
   // ~~ studyDisplayList
   useEffect(() => {
@@ -83,7 +138,6 @@ function PanelStudyBrowserAura({
     async function fetchStudiesForPatient(StudyInstanceUID) {
       // current study qido
       const qidoForStudyUID = await dataSource.query.studies.search({
-        // disable so miss matched patient id's don't break things
         studyInstanceUid: StudyInstanceUID,
       });
 
@@ -97,9 +151,8 @@ function PanelStudyBrowserAura({
       // try to fetch the prior studies based on the patientID if the
       // server can respond.
       try {
-        qidoStudiesForPatient = await getStudiesForPatientByMRN(
-          qidoForStudyUID
-        );
+        qidoStudiesForPatient =
+          await getStudiesForPatientByMRN(qidoForStudyUID);
       } catch (error) {
         console.warn(error);
       }
@@ -136,7 +189,23 @@ function PanelStudyBrowserAura({
 
   // ~~ Initial Thumbnails
   useEffect(() => {
-    const currentDisplaySets = displaySetService.activeDisplaySets;
+    if (!hasLoadedViewports) {
+      if (activeViewportId) {
+        // Once there is an active viewport id, it means the layout is ready
+        // so wait a bit of time to allow the viewports preferential loading
+        // which improves user experience of responsiveness significantly on slower
+        // systems.
+        window.setTimeout(() => setHasLoadedViewports(true), 250);
+      }
+
+      return;
+    }
+
+    let currentDisplaySets = displaySetService.activeDisplaySets;
+    // filter non based on the list of modalities that are supported by cornerstone
+    currentDisplaySets = currentDisplaySets.filter(
+      (ds) => !thumbnailNoImageModalities.includes(ds.Modality)
+    );
 
     if (!currentDisplaySets.length) {
       return;
@@ -148,7 +217,8 @@ function PanelStudyBrowserAura({
         dSet.displaySetInstanceUID
       );
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-      const imageId = imageIds[Math.floor(imageIds.length / 2)];
+
+      const imageId = getImageIdForThumbnail(displaySet, imageIds);
 
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
       if (!imageId || displaySet?.unsupported) {
@@ -161,7 +231,13 @@ function PanelStudyBrowserAura({
         return { ...prevState, ...newImageSrcEntry };
       });
     });
-  }, [displaySetService, dataSource, getImageSrc]);
+  }, [
+    displaySetService,
+    dataSource,
+    getImageSrc,
+    activeViewportId,
+    hasLoadedViewports,
+  ]);
 
   // ~~ displaySets
   useEffect(() => {
@@ -173,8 +249,8 @@ function PanelStudyBrowserAura({
 
     const mappedDisplaySets = _mapDisplaySets(
       currentDisplaySets,
+      displaySetsLoadingState,
       thumbnailImageSrcMap,
-      trackedSeries,
       viewports,
       viewportGridService,
       dataSource,
@@ -187,11 +263,29 @@ function PanelStudyBrowserAura({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     displaySetService.activeDisplaySets,
-    trackedSeries,
+    displaySetsLoadingState,
     viewports,
     dataSource,
     thumbnailImageSrcMap,
   ]);
+
+  // -- displaySetsLoadingState
+  useEffect(() => {
+    const { unsubscribe } = studyPrefetcherService.subscribe(
+      studyPrefetcherService.EVENTS.DISPLAYSET_LOAD_PROGRESS,
+      (updatedDisplaySetLoadingState) => {
+        const { displaySetInstanceUID, loadingProgress } =
+          updatedDisplaySetLoadingState;
+
+        setDisplaySetsLoadingState((prevState) => ({
+          ...prevState,
+          [displaySetInstanceUID]: loadingProgress,
+        }));
+      }
+    );
+
+    return () => unsubscribe();
+  }, [studyPrefetcherService]);
 
   // ~~ subscriptions --> displaySets
   useEffect(() => {
@@ -199,6 +293,9 @@ function PanelStudyBrowserAura({
     const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       (data) => {
+        if (!hasLoadedViewports) {
+          return;
+        }
         const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async (dSet) => {
           const displaySetInstanceUID = dSet.displaySetInstanceUID;
@@ -216,7 +313,7 @@ function PanelStudyBrowserAura({
           }
 
           const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-          const imageId = imageIds[Math.floor(imageIds.length / 2)];
+          const imageId = getImageIdForThumbnail(displaySet, imageIds);
 
           // TODO: Is it okay that imageIds are not returned here for SR displaysets?
           if (!imageId) {
@@ -241,7 +338,6 @@ function PanelStudyBrowserAura({
     dataSource,
     getImageSrc,
     thumbnailImageSrcMap,
-    trackedSeries,
     viewports,
   ]);
 
@@ -253,8 +349,8 @@ function PanelStudyBrowserAura({
       (changedDisplaySets) => {
         const mappedDisplaySets = _mapDisplaySets(
           changedDisplaySets,
+          displaySetsLoadingState,
           thumbnailImageSrcMap,
-          trackedSeries,
           viewports,
           viewportGridService,
           dataSource,
@@ -273,8 +369,8 @@ function PanelStudyBrowserAura({
         () => {
           const mappedDisplaySets = _mapDisplaySets(
             displaySetService.getActiveDisplaySets(),
+            displaySetsLoadingState,
             thumbnailImageSrcMap,
-            trackedSeries,
             viewports,
             viewportGridService,
             dataSource,
@@ -292,18 +388,17 @@ function PanelStudyBrowserAura({
       SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
   }, [
+    displaySetsLoadingState,
     thumbnailImageSrcMap,
-    trackedSeries,
     viewports,
     dataSource,
     displaySetService,
   ]);
 
-  const tabs = _createStudyBrowserTabs(
+  const tabs = createStudyBrowserTabs(
     StudyInstanceUIDs,
     studyDisplayList,
-    displaySets,
-    hangingProtocolService
+    displaySets
   );
 
   // TODO: Should not fire this on "close"
@@ -375,30 +470,43 @@ function PanelStudyBrowserAura({
     }
   }, [expandedStudyInstanceUIDs, jumpToDisplaySet, tabs]);
 
+  const onThumbnailContextMenu = (commandName, options) => {
+    commandsManager.runCommand(commandName, options);
+  };
+
   return (
-    <StudyBrowser
-      tabs={tabs}
-      servicesManager={servicesManager}
-      activeTabName={activeTabName}
-      expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
-      onClickStudy={_handleStudyClick}
-      onClickTab={(clickedTabName) => {
-        setActiveTabName(clickedTabName);
-      }}
-      onClickUntrack={(displaySetInstanceUID) => {
-        const displaySet = displaySetService.getDisplaySetByUID(
-          displaySetInstanceUID
-        );
-        // TODO: shift this somewhere else where we're centralizing this logic?
-        // Potentially a helper from displaySetInstanceUID to this
-        sendTrackedMeasurementsEvent('UNTRACK_SERIES', {
-          SeriesInstanceUID: displaySet.SeriesInstanceUID,
-        });
-      }}
-      onClickThumbnail={() => {}}
-      onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
-      activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
-    />
+    <>
+      <>
+        <PanelStudyBrowserHeader
+          viewPresets={viewPresets}
+          updateViewPresetValue={updateViewPresetValue}
+          actionIcons={actionIcons}
+          updateActionIconValue={updateActionIconValue}
+        />
+        <Separator
+          orientation="horizontal"
+          className="bg-black"
+          thickness="2px"
+        />
+      </>
+
+      <StudyBrowser
+        tabs={tabs}
+        servicesManager={servicesManager}
+        activeTabName={activeTabName}
+        expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
+        onClickStudy={_handleStudyClick}
+        onClickTab={(clickedTabName) => {
+          setActiveTabName(clickedTabName);
+        }}
+        onClickThumbnail={() => {}}
+        onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+        activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
+        showSettings={actionIcons.find((icon) => icon.id === 'settings').value}
+        viewPresets={viewPresets}
+        onThumbnailContextMenu={onThumbnailContextMenu}
+      />
+    </>
   );
 }
 
@@ -412,7 +520,19 @@ PanelStudyBrowserAura.propTypes = {
   requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
 };
 
-export default PanelStudyBrowserAura;
+function getImageIdForThumbnail(displaySet: any, imageIds: any) {
+  let imageId;
+  if (displaySet.isDynamicVolume) {
+    const timePoints = displaySet.dynamicVolumeInfo.timePoints;
+    const middleIndex = Math.floor(timePoints.length / 2);
+    const middleTimePointImageIds = timePoints[middleIndex];
+    imageId =
+      middleTimePointImageIds[Math.floor(middleTimePointImageIds.length / 2)];
+  } else {
+    imageId = imageIds[Math.floor(imageIds.length / 2)];
+  }
+  return imageId;
+}
 
 /**
  * Maps from the DataSource's format to a naturalized object
@@ -438,8 +558,8 @@ function _mapDataSourceStudies(studies) {
 
 function _mapDisplaySets(
   displaySets,
+  displaySetLoadingState,
   thumbnailImageSrcMap,
-  trackedSeriesInstanceUIDs,
   viewports, // TODO: make array of `displaySetInstanceUIDs`?
   viewportGridService,
   dataSource,
@@ -455,19 +575,6 @@ function _mapDisplaySets(
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds);
       const numPanes = viewportGridService.getNumViewportPanes();
-      const viewportIdentificator = [];
-
-      if (numPanes !== 1) {
-        viewports.forEach((viewportData) => {
-          if (
-            viewportData?.displaySetInstanceUIDs?.includes(
-              ds.displaySetInstanceUID
-            )
-          ) {
-            viewportIdentificator.push(viewportData.viewportLabel);
-          }
-        });
-      }
 
       const array =
         componentType === 'thumbnailTracked'
@@ -481,6 +588,8 @@ function _mapDisplaySets(
           ? images[0].BodyPartExamined
           : '';
 
+      const loadingProgress = displaySetLoadingState?.[displaySetInstanceUID];
+
       const thumbnailProps = {
         displaySetInstanceUID,
         description: ds.SeriesDescription,
@@ -488,6 +597,7 @@ function _mapDisplaySets(
         modality: ds.Modality,
         seriesDate: formatDate(ds.SeriesDate),
         numInstances: ds.numImageFrames,
+        loadingProgress,
         countIcon: ds.countIcon,
         messages: ds.messages,
         StudyInstanceUID: ds.StudyInstanceUID,
@@ -498,16 +608,86 @@ function _mapDisplaySets(
           displaySetInstanceUID,
           // .. Any other data to pass
         },
-        isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
+        isTracked: false,
         isHydratedForDerivedDisplaySet: ds.isHydrated,
-        viewportIdentificator,
         bodyPartExamined,
-        canReject: null,
-        onReject: null,
       };
 
       if (componentType === 'thumbnailNoImage') {
-        thumbnailProps.canReject = false;
+        if (dataSource.reject && dataSource.reject.series) {
+          thumbnailProps.canReject = !ds?.unsupported;
+          thumbnailProps.onReject = () => {
+            uiDialogService.create({
+              id: 'ds-reject-sr',
+              centralize: true,
+              isDraggable: false,
+              showOverlay: true,
+              content: Dialog,
+              contentProps: {
+                title: 'Delete Report',
+                body: () => (
+                  <div className="bg-primary-dark p-4 text-white">
+                    <p>Are you sure you want to delete this report?</p>
+                    <p className="mt-2">This action cannot be undone.</p>
+                  </div>
+                ),
+                actions: [
+                  {
+                    id: 'cancel',
+                    text: 'Cancel',
+                    type: ButtonEnums.type.secondary,
+                  },
+                  {
+                    id: 'yes',
+                    text: 'Yes',
+                    type: ButtonEnums.type.primary,
+                    classes: ['reject-yes-button'],
+                  },
+                ],
+                onClose: () => uiDialogService.dismiss({ id: 'ds-reject-sr' }),
+                onShow: () => {
+                  const yesButton =
+                    document.querySelector('.reject-yes-button');
+
+                  yesButton.focus();
+                },
+                onSubmit: async ({ action }) => {
+                  switch (action.id) {
+                    case 'yes':
+                      try {
+                        await dataSource.reject.series(
+                          ds.StudyInstanceUID,
+                          ds.SeriesInstanceUID
+                        );
+                        displaySetService.deleteDisplaySet(
+                          displaySetInstanceUID
+                        );
+                        uiDialogService.dismiss({ id: 'ds-reject-sr' });
+                        uiNotificationService.show({
+                          title: 'Delete Report',
+                          message: 'Report deleted successfully',
+                          type: 'success',
+                        });
+                      } catch (error) {
+                        uiDialogService.dismiss({ id: 'ds-reject-sr' });
+                        uiNotificationService.show({
+                          title: 'Delete Report',
+                          message: 'Failed to delete report',
+                          type: 'error',
+                        });
+                      }
+                      break;
+                    case 'cancel':
+                      uiDialogService.dismiss({ id: 'ds-reject-sr' });
+                      break;
+                  }
+                },
+              },
+            });
+          };
+        } else {
+          thumbnailProps.canReject = false;
+        }
       }
 
       array.push(thumbnailProps);
@@ -516,124 +696,12 @@ function _mapDisplaySets(
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
 
-const thumbnailNoImageModalities = [
-  'SR',
-  'SEG',
-  'SM',
-  'RTSTRUCT',
-  'RTPLAN',
-  'RTDOSE',
-  'DOC',
-  'OT',
-];
-
 function _getComponentType(ds) {
   if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {
     return 'thumbnailNoImage';
   }
 
   return 'thumbnailTracked';
-}
-
-/**
- *
- * @param {string[]} primaryStudyInstanceUIDs
- * @param {object[]} studyDisplayList
- * @param {string} studyDisplayList.studyInstanceUid
- * @param {string} studyDisplayList.date
- * @param {string} studyDisplayList.description
- * @param {string} studyDisplayList.modalities
- * @param {number} studyDisplayList.numInstances
- * @param {object[]} displaySets
- * @returns tabs - The prop object expected by the StudyBrowser component
- */
-function _createStudyBrowserTabs(
-  primaryStudyInstanceUIDs,
-  studyDisplayList,
-  displaySets,
-  hangingProtocolService
-) {
-  const primaryStudies = [];
-  const recentStudies = [];
-  const allStudies = [];
-
-  // Iterate over each study...
-  studyDisplayList.forEach((study) => {
-    // Find it's display sets
-    const displaySetsForStudy = displaySets.filter(
-      (ds) => ds.StudyInstanceUID === study.studyInstanceUid
-    );
-
-    // Sort them
-    // const dsSortFn = hangingProtocolService.getDisplaySetSortFunction();
-    // displaySetsForStudy.sort(dsSortFn);
-
-    /* Sort by series number, then by series date */
-    displaySetsForStudy.sort((a, b) => {
-      if (b.modality === 'DOC') {
-        return -1;
-      }
-
-      if (a.seriesNumber !== b.seriesNumber) {
-        return a.seriesNumber - b.seriesNumber;
-      }
-
-      const seriesDateA = Date.parse(a.seriesDate);
-      const seriesDateB = Date.parse(b.seriesDate);
-
-      return seriesDateA - seriesDateB;
-    });
-
-    // Map the study to it's tab/view representation
-    const tabStudy = Object.assign({}, study, {
-      displaySets: displaySetsForStudy,
-    });
-
-    // Add the "tab study" to the 'primary', 'recent', and/or 'all' tab group(s)
-    if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
-      primaryStudies.push(tabStudy);
-      allStudies.push(tabStudy);
-    } else {
-      // TODO: Filter allStudies to dates within one year of current date
-      recentStudies.push(tabStudy);
-      allStudies.push(tabStudy);
-    }
-  });
-
-  // Newest first
-  const _byDate = (a, b) => {
-    if (b.modality === 'DOC') {
-      // return -1;
-      return 1;
-    }
-
-    const dateA = moment(a.date, 'DD-MMM-YYYY');
-    const dateB = moment(b.date, 'DD-MMM-YYYY');
-
-    if (!dateA.isValid()) {
-      return 1;
-    }
-
-    return dateB.isAfter(dateA) ? 1 : -1;
-  };
-
-  return [
-    {
-      name: 'primary',
-      label: 'Primary',
-      studies: primaryStudies.sort((studyA, studyB) => _byDate(studyA, studyB)),
-    },
-    {
-      name: 'recent',
-      label: 'Recent',
-      studies: recentStudies.sort((studyA, studyB) => _byDate(studyA, studyB)),
-    },
-    {
-      name: 'all',
-      label: 'All',
-      studies: allStudies.sort((studyA, studyB) => _byDate(studyA, studyB)),
-    },
-  ];
 }
 
 function _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs) {

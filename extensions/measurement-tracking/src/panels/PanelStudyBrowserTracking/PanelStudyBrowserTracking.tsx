@@ -601,7 +601,7 @@ function _mapDisplaySets(
 
       const bodyPartExamined =
         images && images.length > 0 && images[0].BodyPartExamined ? images[0].BodyPartExamined : '';
-        
+
       const loadingProgress = displaySetLoadingState?.[displaySetInstanceUID];
 
       const thumbnailProps = {
