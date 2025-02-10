@@ -5,13 +5,6 @@ import { useDrag } from 'react-dnd';
 import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
-import { Button } from '../Button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../DropdownMenu';
 
 /**
  * Display a thumbnail for a display set.
@@ -27,20 +20,20 @@ const Thumbnail = ({
   loadingProgress,
   countIcon,
   messages,
-  dragData = {},
   isActive,
   onClick,
   onDoubleClick,
-  viewPreset = 'thumbnails',
+  thumbnailType,
   modality,
+  viewPreset = 'thumbnails',
   isHydratedForDerivedDisplaySet = false,
-  canReject = false,
-  onReject = () => {},
   isTracked = false,
   bodyPartExamined = '',
-  thumbnailType = 'thumbnail',
+  canReject = false,
+  dragData = {},
+  onReject = () => {},
   onClickUntrack = () => {},
-  onThumbnailContextMenu,
+  ThumbnailMenuItems = () => {},
 }: withAppTypes): React.ReactNode => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
@@ -109,7 +102,7 @@ const Thumbnail = ({
                 <Tooltip>
                   <TooltipTrigger>
                     <div className="group">
-                      <Icons.StatusTracking className="text-primary-light h-[20px] w-[20px] group-hover:hidden" />
+                      <Icons.StatusTracking className="text-primary-light h-[15px] w-[15px] group-hover:hidden" />
                       <Icons.Cancel
                         className="text-primary-light hidden h-[15px] w-[15px] group-hover:block"
                         onClick={onClickUntrack}
@@ -135,54 +128,26 @@ const Thumbnail = ({
             </div>
             {/* bottom right */}
             <div className="absolute bottom-0 right-0 flex items-center gap-[4px] p-[4px]">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
-                  >
-                    <Icons.More />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  hideWhenDetached
-                  align="start"
-                >
-                  <DropdownMenuItem
-                    onSelect={() => {
-                      onThumbnailContextMenu('openDICOMTagViewer', {
-                        displaySetInstanceUID,
-                      });
-                    }}
-                    className="gap-[6px]"
-                  >
-                    <Icons.DicomTagBrowser />
-                    Tag Browser
-                  </DropdownMenuItem>
-                  {canReject && (
-                    <DropdownMenuItem
-                      onSelect={() => {
-                        onReject();
-                      }}
-                      className="gap-[6px]"
-                    >
-                      <Icons.Trash className="h-5 w-5 text-red-500" />
-                      Delete Report
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <ThumbnailMenuItems
+                displaySetInstanceUID={displaySetInstanceUID}
+                canReject={canReject}
+                onReject={onReject}
+              />
             </div>
           </div>
         </div>
-        <div className="mt-3 flex h-[70px] w-[128px] flex-col">
-          <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis pb-0.5 pl-1 text-[12px] font-normal leading-4 text-white">
-            {description}
-          </div>
-          <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis pb-0.5 pl-1 text-[12px] font-normal leading-4 text-white">
-            {bodyPartExamined}
-          </div>
+        <div className="flex h-[52px] w-[128px] flex-col justify-end">
+          <Tooltip>
+            <TooltipContent>{description}</TooltipContent>
+            <TooltipTrigger>
+              <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis whitespace-nowrap pb-0.5 pl-1 text-left text-[12px] font-normal leading-4 text-white">
+                {description}
+              </div>
+              <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis pb-0.5 pl-1 text-[12px] font-normal leading-4 text-white">
+                {bodyPartExamined}
+              </div>
+            </TooltipTrigger>
+          </Tooltip>
           <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
             <div className="text-muted-foreground pl-1 text-[11px]"> S:{seriesNumber}</div>
             <div className="text-muted-foreground text-[11px]">
@@ -209,21 +174,25 @@ const Thumbnail = ({
           isActive && 'bg-popover'
         )}
       >
-        <div className="relative flex h-[32px] items-center gap-[8px]">
+        <div className="relative flex h-[32px] w-full items-center gap-[8px] overflow-hidden">
           <div
             className={classnames(
-              'h-[32px] w-[4px] rounded-[2px]',
+              'h-[32px] w-[4px] min-w-[4px] rounded-[2px]',
               isActive || isHydratedForDerivedDisplaySet ? 'bg-highlight' : 'bg-primary/65',
               loadingProgress && loadingProgress < 1 && 'bg-primary/25'
             )}
           ></div>
-          <div className="flex h-full flex-col">
+          <div className="flex h-full w-[calc(100%-12px)] flex-col">
             <div className="flex items-center gap-[7px]">
               <div className="text-[13px] font-semibold text-white">{modality}</div>
-
-              <div className="max-w-[160px] overflow-hidden overflow-ellipsis whitespace-nowrap text-[13px] font-normal text-white">
-                {description}
-              </div>
+              <Tooltip>
+                <TooltipContent>{description}</TooltipContent>
+                <TooltipTrigger className="w-full overflow-hidden">
+                  <div className="max-w-[160px] overflow-hidden overflow-ellipsis whitespace-nowrap text-left text-[13px] font-normal text-white">
+                    {description}
+                  </div>
+                </TooltipTrigger>
+              </Tooltip>
             </div>
 
             <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
@@ -247,12 +216,11 @@ const Thumbnail = ({
             messages={messages}
             id={`display-set-tooltip-${displaySetInstanceUID}`}
           />
-
           {isTracked && (
             <Tooltip>
               <TooltipTrigger>
                 <div className="group">
-                  <Icons.StatusTracking className="text-primary-light h-[20px] w-[20px] group-hover:hidden" />
+                  <Icons.StatusTracking className="text-primary-light h-[20px] w-[15px] group-hover:hidden" />
                   <Icons.Cancel
                     className="text-primary-light hidden h-[15px] w-[15px] group-hover:block"
                     onClick={onClickUntrack}
@@ -275,41 +243,11 @@ const Thumbnail = ({
               </TooltipContent>
             </Tooltip>
           )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
-              >
-                <Icons.More />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent hideWhenDetached>
-              <DropdownMenuItem
-                onSelect={() => {
-                  onThumbnailContextMenu('openDICOMTagViewer', {
-                    displaySetInstanceUID,
-                  });
-                }}
-                className="gap-[6px]"
-              >
-                <Icons.DicomTagBrowser />
-                Tag Browser
-              </DropdownMenuItem>
-              {canReject && (
-                <DropdownMenuItem
-                  onSelect={() => {
-                    onReject();
-                  }}
-                  className="gap-[6px]"
-                >
-                  <Icons.Trash className="h-5 w-5 text-red-500" />
-                  Delete Report
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ThumbnailMenuItems
+            displaySetInstanceUID={displaySetInstanceUID}
+            canReject={canReject}
+            onReject={onReject}
+          />
         </div>
       </div>
     );
@@ -373,8 +311,6 @@ Thumbnail.propTypes = {
   viewPreset: PropTypes.string,
   modality: PropTypes.string,
   isHydratedForDerivedDisplaySet: PropTypes.bool,
-  canReject: PropTypes.bool,
-  onReject: PropTypes.func,
   isTracked: PropTypes.bool,
   onClickUntrack: PropTypes.func,
   countIcon: PropTypes.string,
