@@ -118,8 +118,7 @@ window.config = {
   ],
 
   headers: {
-    Authorization:
-      'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJhdS5hdXJhYm94LmFwcCIsImF1ZCI6ImF1LmF1cmFib3guYXBwIiwic3ViIjoiZDY1NzFiOGUtYWY3ZC00ZjRkLWEyZjMtMDllMjgxMWI2MjRmIiwia2V5IjoiJDJ5JDEwJGdIRlNVdkh0OHdPZE1tTmdaaVJRNU9VRklDcUNscmlSSC8zNnU5ajRqL0tUTlhBOW1GdzFlIiwiZW5kcG9pbnQiOiJodHRwczovL2F1LmF1cmFib3guYXBwL2FwaSIsImlhdCI6MTczNjIxMDk4MywibmJmIjoxNzM2MjEwOTgzLCJleHAiOjE3MzYyMTQ1ODMsInN0b3JlX2lkIjoiIiwicGVyc29uX2lkIjoiMWJmMzkyMTktNmZkYy00NTEyLWJhY2EtNmU4NTk2YjdhZjZkIn0.aInBtjQkhiup1qEonACG03UIZBpfRuaPPdDR98QqDM_yPNWk4hK9EEPs0yIQldZAwh7xBL_eIUtCANFocAO4pKgvoSpkDqs5MO8tgEK_nD9Jx22Qlp3fAzTlT3767godjV4ckqR05c2SXjuXX4ONC_InLvJ1ICHF24BMYHeCTvLSuN6rgh5ETAHJFG_lKaeYAddID7PWkOFYvLFwJFR55JDjX0SDV7JBW2lME_D4xSP7O0-5HqdnLAMRDuICbgBceo--eKw1WABfdv6bIiBwvecknHr_E1m-7PskefvOXF9zqq9qZQAPvafUBZnsxGjRqsM0yE-f0sj54eYdFqhLog',
+    Authorization: 'Bearer ',
   },
 
   httpErrorHandler: error => {
@@ -148,8 +147,8 @@ window.config = {
   //       ))
   //   },
   // },
-  defaultDataSourceName: 'dicomweb-aura',
-  // defaultDataSourceName: 'dicomweb',
+  // defaultDataSourceName: 'dicomweb-aura',
+  defaultDataSourceName: 'dicomweb',
   hotkeys: [
     {
       commandName: 'incrementActiveViewport',
