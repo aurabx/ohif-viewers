@@ -43,14 +43,7 @@ const ThumbnailList = ({
                 thumbnailType={componentType}
                 onClick={() => onThumbnailClick(displaySetInstanceUID)}
                 onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
-                isTracked={isTracked}
-                bodyPartExamined={bodyPartExamined}
-                loadingProgress={loadingProgress}
                 onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
-                isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
-                canReject={canReject}
-                onReject={onReject}
-                onThumbnailContextMenu={onThumbnailContextMenu}
                 viewPreset="thumbnails"
                 ThumbnailMenuItems={ThumbnailMenuItems}
               />

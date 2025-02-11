@@ -4,7 +4,7 @@ import { id } from './id';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 import moreTools from './moreTools';
-import { performCustomizations } from './customizations';
+// import { performCustomizations } from './customizations';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -113,7 +113,7 @@ function modeFactory({ modeConfiguration }) {
 
       measurementService.clearMeasurements();
 
-      performCustomizations(customizationService);
+      //performCustomizations(customizationService);
 
       // Init Default and SR ToolGroups
       initToolGroups(

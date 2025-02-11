@@ -136,14 +136,14 @@ const Thumbnail = ({
             </div>
           </div>
         </div>
-        <div className="flex h-[52px] w-[128px] flex-col justify-end">
+        <div className="flex h-[54px] w-[128px] flex-col justify-end">
           <Tooltip>
             <TooltipContent>{description}</TooltipContent>
             <TooltipTrigger>
               <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis whitespace-nowrap pb-0.5 pl-1 text-left text-[12px] font-normal leading-4 text-white">
                 {description}
               </div>
-              <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis pb-0.5 pl-1 text-[12px] font-normal leading-4 text-white">
+              <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis pb-0.5 pl-1 text-left text-[12px] font-normal leading-4 text-white">
                 {bodyPartExamined}
               </div>
             </TooltipTrigger>
@@ -174,10 +174,10 @@ const Thumbnail = ({
           isActive && 'bg-popover'
         )}
       >
-        <div className="relative flex h-[32px] w-full items-center gap-[8px] overflow-hidden">
+        <div className="relative flex h-[48px] w-full items-center gap-[8px] overflow-hidden">
           <div
             className={classnames(
-              'h-[32px] w-[4px] min-w-[4px] rounded-[2px]',
+              'h-[48px] w-[4px] min-w-[4px] rounded-[2px]',
               isActive || isHydratedForDerivedDisplaySet ? 'bg-highlight' : 'bg-primary/65',
               loadingProgress && loadingProgress < 1 && 'bg-primary/25'
             )}
@@ -190,6 +190,9 @@ const Thumbnail = ({
                 <TooltipTrigger className="w-full overflow-hidden">
                   <div className="max-w-[160px] overflow-hidden overflow-ellipsis whitespace-nowrap text-left text-[13px] font-normal text-white">
                     {description}
+                  </div>
+                  <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis pb-0.5 pl-0 text-left text-[12px] font-normal leading-4 text-white">
+                    {bodyPartExamined}
                   </div>
                 </TooltipTrigger>
               </Tooltip>
@@ -259,7 +262,7 @@ const Thumbnail = ({
         className,
         'bg-muted hover:bg-primary/30 group flex cursor-pointer select-none flex-col rounded outline-none',
         viewPreset === 'thumbnails' && 'h-[200px] w-[135px]',
-        viewPreset === 'list' && 'col-span-2 h-[40px] w-[275px]'
+        viewPreset === 'list' && 'col-span-2 h-[58px] w-[275px]'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={
