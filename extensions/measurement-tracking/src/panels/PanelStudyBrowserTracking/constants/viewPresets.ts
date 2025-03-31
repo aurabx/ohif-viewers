@@ -1,4 +1,4 @@
-import type { viewPreset } from '../PanelStudyBrowserTracking/types/viewPreset';
+import type { viewPreset } from '../PanelStudyBrowserAura/types/viewPreset';
 
 const defaultViewPresets = [
   {

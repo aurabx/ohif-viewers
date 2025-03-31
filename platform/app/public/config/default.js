@@ -17,6 +17,7 @@ window.config = {
   showLoadingIndicator: true,
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
+  activateViewportBeforeInteraction: false,
   groupEnabledModesFirst: true,
   allowMultiSelectExport: true,
   maxNumRequests: {

@@ -1,10 +1,7 @@
-import { hotkeys } from '@ohif/core';
 import i18n from 'i18next';
 import { id } from './id';
-import initToolGroups from './initToolGroups';
-import toolbarButtons from './toolbarButtons';
-import moreTools from './moreTools';
-// import { performCustomizations } from './customizations';
+import initToolGroups from '@ohif/mode-longitudinal/src/initToolGroups.js';
+import toolbarButtons from '@ohif/mode-longitudinal/src/toolbarButtons';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -24,29 +21,24 @@ const cornerstone = {
 };
 
 const aura = {
-  hangingProtocols: 'aurabox-extension.hangingProtocolModule.default',
+  //hangingProtocols: 'aurabox-extension.hangingProtocolModule.default',
   thumbnailList: 'aurabox-extension.panelModule.seriesList',
 };
 
 const tracked = {
-  measurements:
-    '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
+  measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
-  viewport:
-    '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
+  viewport: '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
 };
 
 const dicomsr = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
-  sopClassHandler3D:
-    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  sopClassHandler3D: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d',
   viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
 const dicomvideo = {
-  sopClassHandler:
-    '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
   viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
@@ -56,21 +48,18 @@ const dicompdf = {
 };
 
 const dicomSeg = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
 };
 
 const dicomPmap = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-pmap.sopClassHandlerModule.dicom-pmap',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-pmap.sopClassHandlerModule.dicom-pmap',
   viewport: '@ohif/extension-cornerstone-dicom-pmap.viewportModule.dicom-pmap',
 };
 
 const dicomRT = {
   viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
 };
 
 const extensionDependencies = {
@@ -97,33 +86,15 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: function ({
-      servicesManager,
-      extensionManager,
-      commandsManager,
-    }: withAppTypes) {
-      const {
-        measurementService,
-        toolbarService,
-        toolGroupService,
-        customizationService,
-        panelService,
-        segmentationService,
-      } = servicesManager.services;
+    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
+      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
 
       measurementService.clearMeasurements();
 
-      //performCustomizations(customizationService);
-
       // Init Default and SR ToolGroups
-      initToolGroups(
-        extensionManager,
-        toolGroupService,
-        commandsManager,
-        this.labelConfig
-      );
+      initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.addButtons([...toolbarButtons, ...moreTools]);
+      toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
@@ -136,25 +107,67 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
 
+      toolbarService.createButtonSection('measurementSection', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI',
+        'RectangleROI',
+        'CircleROI',
+        'PlanarFreehandROI',
+        'SplineROI',
+        'LivewireContour',
+      ]);
+
+      toolbarService.createButtonSection('moreToolsSection', [
+        'Reset',
+        'rotate-right',
+        'flipHorizontal',
+        'ImageSliceSync',
+        'ReferenceLines',
+        'ImageOverlayViewer',
+        'StackScroll',
+        'invert',
+        'Probe',
+        'Cine',
+        'Angle',
+        'CobbAngle',
+        'Magnify',
+        'CalibrationLine',
+        'TagBrowser',
+        'AdvancedMagnify',
+        'UltrasoundDirectionalTool',
+        'WindowLevelRegion',
+      ]);
+
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
-      _activatePanelTriggersSubscriptions = [
-        ...panelService.addActivatePanelTriggers(cornerstone.segmentation, [
-          {
-            sourcePubSubService: segmentationService,
-            sourceEvents: [segmentationService.EVENTS.SEGMENTATION_ADDED],
-          },
-        ]),
-        ...panelService.addActivatePanelTriggers(tracked.measurements, [
-          {
-            sourcePubSubService: measurementService,
-            sourceEvents: [
-              measurementService.EVENTS.MEASUREMENT_ADDED,
-              measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
-            ],
-          },
-        ]),
-      ];
+      // _activatePanelTriggersSubscriptions = [
+      //   ...panelService.addActivatePanelTriggers(
+      //     cornerstone.segmentation,
+      //     [
+      //       {
+      //         sourcePubSubService: segmentationService,
+      //         sourceEvents: [segmentationService.EVENTS.SEGMENTATION_ADDED],
+      //       },
+      //     ],
+      //     true
+      //   ),
+      //   ...panelService.addActivatePanelTriggers(
+      //     tracked.measurements,
+      //     [
+      //       {
+      //         sourcePubSubService: measurementService,
+      //         sourceEvents: [
+      //           measurementService.EVENTS.MEASUREMENT_ADDED,
+      //           measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+      //         ],
+      //       },
+      //     ],
+      //     true
+      //   ),
+      //   true,
+      // ];
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -166,10 +179,10 @@ function modeFactory({ modeConfiguration }) {
         uiModalService,
       } = servicesManager.services;
 
-      _activatePanelTriggersSubscriptions.forEach((sub) => sub.unsubscribe());
+      _activatePanelTriggersSubscriptions.forEach(sub => sub.unsubscribe());
       _activatePanelTriggersSubscriptions = [];
 
-      uiDialogService.dismissAll();
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
@@ -186,16 +199,15 @@ function modeFactory({ modeConfiguration }) {
 
       // Exclude non-image modalities
       return {
-        valid: !!modalities_list.filter(
-          (modality) => NON_IMAGE_MODALITIES.indexOf(modality) === -1
-        ).length,
+        valid: !!modalities_list.filter(modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1)
+          .length,
         description:
           'The mode does not support studies that ONLY include the following modalities: SM, ECG, SEG, RTSTRUCT',
       };
     },
     routes: [
       {
-        path: 'longitudinal',
+        path: 'show',
         /*init: ({ servicesManager, extensionManager }) => {
           //defaultViewerRouteInit
         },*/
@@ -205,9 +217,11 @@ function modeFactory({ modeConfiguration }) {
             props: {
               // leftPanels: [tracked.thumbnailList],
               leftPanels: [aura.thumbnailList],
+              leftPanelResizable: true,
               // rightPanels: [cornerstone.segmentation, tracked.measurements],
               rightPanels: [],
               rightPanelClosed: true,
+              rightPanelResizable: true,
               viewports: [
                 {
                   namespace: tracked.viewport,
@@ -262,7 +276,6 @@ function modeFactory({ modeConfiguration }) {
       dicomsr.sopClassHandler,
       dicomRT.sopClassHandler,
     ],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
     ...modeConfiguration,
   };
 }
@@ -274,4 +287,4 @@ const mode = {
 };
 
 export default mode;
-export { initToolGroups, moreTools, toolbarButtons };
+export { initToolGroups, toolbarButtons };

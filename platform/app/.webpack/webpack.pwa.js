@@ -78,12 +78,21 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
-        path.resolve(
-          __dirname,
-          'aurabox/extensions/aurabox-extension/node_modules'
-        ),
 
         path.resolve(__dirname, 'aurabox/modes/aurabox-mode/node_modules'),
+        path.resolve(__dirname, 'aurabox/extensions/aurabox-extension/node_modules'),
+        path.resolve(__dirname, 'aurabox/modes/aurabox-mode/node_modules'),
+        path.resolve(__dirname, 'aurabox/modes/aurabox-mode/node_modules'),
+        path.resolve(__dirname, 'aurabox/modes/aurabox-mode/node_modules'),
+        path.resolve(__dirname, 'aurabox/modes/aurabox-mode/node_modules'),
+        path.resolve(
+          __dirname,
+          '/Users/nigelheap/htdocs/aurabox/ohif-viewers/aurabox/extensions/aurabox-extension/node_modules'
+        ),
+        path.resolve(
+          __dirname,
+          '/Users/nigelheap/htdocs/aurabox/ohif-viewers/aurabox/modes/aurabox-mode/node_modules'
+        ),
       ],
     },
     plugins: [
@@ -213,10 +222,8 @@ module.exports = (env, argv) => {
   }
 
   mergedConfig.output.filename = isProdBuild ? '[name].main.js' : '[name].js';
-  mergedConfig.output.chunkFilename = isProdBuild
-    ? '[name].bundle.[chunkhash].js'
-    : '[name].js';
-    
+  mergedConfig.output.chunkFilename = isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js';
+
   mergedConfig.watchOptions = {
     ignored: /node_modules\/@cornerstonejs/,
   };

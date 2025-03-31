@@ -1,4 +1,4 @@
-import type { actionIcon } from '../PanelStudyBrowserTracking/types/actionsIcon';
+import type { actionIcon } from '../PanelStudyBrowserAura/types/actionsIcon';
 
 const defaultActionIcons = [
   {

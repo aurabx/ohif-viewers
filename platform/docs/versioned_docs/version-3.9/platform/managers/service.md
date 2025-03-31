@@ -173,7 +173,7 @@ export default class BackEndService {
 
 with a registration of
 
-```ts title="types/index.ts"
+```ts title="types/index.tsx"
 import BackEndService from "../services/BackEndService/BackEndService";
 
 export { BackEndService };
