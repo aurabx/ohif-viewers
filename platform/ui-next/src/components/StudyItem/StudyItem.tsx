@@ -64,7 +64,7 @@ const StudyItem = ({
               </div>
               <div className="text-muted-foreground flex flex-col items-end pl-[10px] text-[12px]">
                 <div className="max-w-[150px] overflow-hidden text-ellipsis">{modalities}</div>
-                <div>{numInstances}</div>
+                <div>{numInstances > 0 ? numInstances : ''}</div>
               </div>
               {StudyMenuItems && (
                 <div className="ml-2 flex items-center">
