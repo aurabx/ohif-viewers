@@ -1,7 +1,9 @@
+/** @type {AppTypes.Config} */
+
 __webpack_public_path__ = window.PUBLIC_URL;
 
 window.config = {
-  routerBasename: '/viewers/v3',
+  // routerBasename: '/viewers/v3',
   // routerBasename: '/',
   // whiteLabelling: {},
   extensions: [],
