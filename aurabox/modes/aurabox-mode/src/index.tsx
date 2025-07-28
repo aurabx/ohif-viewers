@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { id } from './id';
-import initToolGroups from '@ohif/mode-longitudinal/src/initToolGroups.js';
-import toolbarButtons from '@ohif/mode-longitudinal/src/toolbarButtons';
+import initToolGroups from './initToolGroups';
+import toolbarButtons from './toolbarButtons';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -87,15 +87,16 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
 
       measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.register(toolbarButtons);
+      toolbarService.updateSection(toolbarService.sections.primary, [
         'MeasurementTools',
         'Zoom',
         'Pan',
@@ -107,7 +108,34 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
 
-      toolbarService.createButtonSection('measurementSection', [
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
+        'orientationMenu',
+        'dataOverlayMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
+        'AdvancedRenderingControls',
+      ]);
+
+      toolbarService.updateSection('AdvancedRenderingControls', [
+        'windowLevelMenuEmbedded',
+        'voiManualControlMenu',
+        'Colorbar',
+        'opacityMenu',
+        'thresholdMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'modalityLoadBadge',
+        'trackingStatus',
+        'navigationComponent',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
+        'windowLevelMenu',
+      ]);
+
+      toolbarService.updateSection('MeasurementTools', [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',
@@ -119,7 +147,7 @@ function modeFactory({ modeConfiguration }) {
         'LivewireContour',
       ]);
 
-      toolbarService.createButtonSection('moreToolsSection', [
+      toolbarService.updateSection('MoreTools', [
         'Reset',
         'rotate-right',
         'flipHorizontal',
@@ -139,6 +167,12 @@ function modeFactory({ modeConfiguration }) {
         'UltrasoundDirectionalTool',
         'WindowLevelRegion',
       ]);
+
+      customizationService.setCustomizations({
+        'panelSegmentation.disableEditing': {
+          $set: true,
+        },
+      });
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
@@ -287,4 +321,3 @@ const mode = {
 };
 
 export default mode;
-export { initToolGroups, toolbarButtons };
