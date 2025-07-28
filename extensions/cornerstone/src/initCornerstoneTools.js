@@ -31,6 +31,7 @@ import {
   TrackballRotateTool,
   AdvancedMagnifyTool,
   UltrasoundDirectionalTool,
+  UltrasoundPleuraBLineTool,
   PlanarFreehandROITool,
   PlanarFreehandContourSegmentationTool,
   SplineROITool,
@@ -38,7 +39,10 @@ import {
   OrientationMarkerTool,
   WindowLevelRegionTool,
   SegmentSelectTool,
+  RegionSegmentPlusTool,
+  SegmentLabelTool,
 } from '@cornerstonejs/tools';
+import { LabelmapSlicePropagationTool, MarkerLabelmapTool } from '@cornerstonejs/ai';
 import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
@@ -46,6 +50,8 @@ import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 
 export default function initCornerstoneTools(configuration = {}) {
   CrosshairsTool.isAnnotation = false;
+  LabelmapSlicePropagationTool.isAnnotation = false;
+  MarkerLabelmapTool.isAnnotation = false;
   ReferenceLinesTool.isAnnotation = false;
   AdvancedMagnifyTool.isAnnotation = false;
   PlanarFreehandContourSegmentationTool.isAnnotation = false;
@@ -91,6 +97,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(ImageOverlayViewerTool);
   addTool(AdvancedMagnifyTool);
   addTool(UltrasoundDirectionalTool);
+  addTool(UltrasoundPleuraBLineTool);
   addTool(PlanarFreehandROITool);
   addTool(SplineROITool);
   addTool(LivewireContourTool);
@@ -98,6 +105,10 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
   addTool(SegmentSelectTool);
+  addTool(SegmentLabelTool);
+  addTool(LabelmapSlicePropagationTool);
+  addTool(MarkerLabelmapTool);
+  addTool(RegionSegmentPlusTool);
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
     textBoxFontSize: '15px',
@@ -144,6 +155,7 @@ const toolNames = {
   ImageOverlayViewer: ImageOverlayViewerTool.toolName,
   AdvancedMagnify: AdvancedMagnifyTool.toolName,
   UltrasoundDirectional: UltrasoundDirectionalTool.toolName,
+  UltrasoundAnnotation: UltrasoundPleuraBLineTool.toolName,
   SplineROI: SplineROITool.toolName,
   LivewireContour: LivewireContourTool.toolName,
   PlanarFreehandROI: PlanarFreehandROITool.toolName,
@@ -152,6 +164,10 @@ const toolNames = {
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
   SegmentBidirectional: SegmentBidirectionalTool.toolName,
   SegmentSelect: SegmentSelectTool.toolName,
+  SegmentLabel: SegmentLabelTool.toolName,
+  LabelmapSlicePropagation: LabelmapSlicePropagationTool.toolName,
+  MarkerLabelmap: MarkerLabelmapTool.toolName,
+  RegionSegmentPlus: RegionSegmentPlusTool.toolName,
 };
 
 export { toolNames };
