@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useViewportRef } from '@ohif/core';
 import './OHIFCornerstonePdfViewport.css';
 
-function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }) {
+function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport', token }) {
   const [url, setUrl] = useState(null);
   const viewportElementRef = useRef(null);
   const viewportRef = useViewportRef(viewportId);
@@ -37,6 +37,7 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
   useEffect(() => {
     const load = async () => {
       let pdfUrlAuthed = await renderedUrl;
+
       pdfUrlAuthed += pdfUrlAuthed.includes('?') ? '&token=' + token : '?token=' + token;
       setUrl(pdfUrlAuthed);
     };
