@@ -88,8 +88,8 @@ window.config = {
       ],
     },
   ],
-  defaultDataSourceName: 'dicomweb',
-  // defaultDataSourceName: 'dicomweb-aura',
+  // defaultDataSourceName: 'dicomweb',
+  defaultDataSourceName: 'dicomweb-aura',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
@@ -134,9 +134,9 @@ window.config = {
       sourceName: 'dicomweb-aura',
       configuration: {
         name: 'Aurabox DICOMWeb',
-        wadoUriRoot: 'https://uhura-prod-au.abxlink.com/dicomweb/v3/raw',
-        qidoRoot: 'https://uhura-prod-au.abxlink.com/dicomweb/v3/raw',
-        wadoRoot: 'https://uhura-prod-au.abxlink.com/dicomweb/v3/raw',
+        wadoUriRoot: 'https://uhura.lndo.site/dicomweb/v3/raw',
+        qidoRoot: 'https://uhura.lndo.site/dicomweb/v3/raw',
+        wadoRoot: 'https://uhura.lndo.site/dicomweb/v3/raw',
         qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',
