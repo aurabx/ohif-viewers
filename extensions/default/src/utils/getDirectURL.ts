@@ -59,17 +59,7 @@ const getDirectURL = (config, params) => {
     }
   }
 
-  console.log(
-    'createRenderedRetrieve',
-    config,
-    params,
-    instance[tag],
-    params.instance[tag]?.BulkDataURI,
-    createRenderedRetrieve(config, params),
-    getBulkdataValue(config, params)
-  );
-  console.log('instance', fetchPart, singlepart, getBulkdataValue(config, params));
-
+  // Encapsulated PDFs are served as bulkdata, not a rendered retrieve.
   if (fetchPart === 'pdf') {
     return getBulkdataValue(config, params);
   }
