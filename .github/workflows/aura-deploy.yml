@@ -38,6 +38,12 @@ jobs:
           node-version: 20.x
           cache: 'yarn'
 
+      # OHIF v3.12.19's lerna/nx invokes `bun run` when bun.lock is present.
+      - name: Set Bun 1.2.23
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.23
+
       - name: Install dependencies 📦
         run: yarn install
 
