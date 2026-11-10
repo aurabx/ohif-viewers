@@ -32,10 +32,10 @@ jobs:
 #        with:
 #          project_id: 'symbolic-fire-321702'
 
-      - name: Set Node.js 18.x
+      - name: Set Node.js 20.x
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: 20.x
           cache: 'yarn'
 
       - name: Install dependencies 📦
@@ -53,14 +53,15 @@ jobs:
 
       - name: Update config
         run: |
-          MERGE_CONFIG="mergedConfig.output.filename = isProdBuild ? '[name].main.js' : '[name].js'; mergedConfig.output.chunkFilename = isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js';"
-          sed -e "s/return mergedConfig;/${MERGE_CONFIG}/" webpack.pwa.js | tee webpack.pwa.js
+          MERGE_CONFIG="mergedConfig.output.filename = isProdBuild ? '[name].main.js' : '[name].js'; mergedConfig.output.chunkFilename = isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js'; return mergedConfig;"
+          sed -e "s/return mergedConfig;/${MERGE_CONFIG}/" platform/app/.webpack/webpack.pwa.js | tee platform/app/.webpack/webpack.pwa.js
 #          sed -e "s/publicPath: PUBLIC_URL/publicPath: 'auto'/" webpack.pwa.js | tee webpack.pwa.js
 
       - name: Build 🏗️
         run: yarn build
         env:
           NODE_ENV: production
+          NODE_OPTIONS: --max-old-space-size=8192
 
 #      - name: 'Push to storage'
 #        uses: google-github-actions/upload-cloud-storage@v1
