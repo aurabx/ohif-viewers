@@ -3,6 +3,9 @@ on:
   pull_request:
     branches: [master, release/*]
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -11,6 +14,7 @@ jobs:
   playwright-tests:
     timeout-minutes: 120
     runs-on: [self-hosted, nashua]
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     strategy:
       fail-fast: false
       matrix:

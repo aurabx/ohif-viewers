@@ -4,6 +4,9 @@ on:
   push:
     branches: [master]
 
+permissions:
+  contents: read
+
 env:
   ACTIONS_STEP_DEBUG: true
 
